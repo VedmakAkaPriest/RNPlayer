@@ -1,0 +1,18 @@
+{
+  "name": "RNPlayer",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start"
+  },
+  "dependencies": {
+    "react": "15.2.0",
+    "react-native": "0.29.0",
+    "react-native-fs": "^1.5.1",
+    "react-native-navigation": "^1.0.26",
+    "react-native-slider": "^0.9.0",
+    "react-native-swipe-list-view": "^0.2.1",
+    "react-native-vector-icons": "^2.0.3",
+    "react-native-video": "^0.8.0"
+  }
+}
