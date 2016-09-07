@@ -1,17 +1,25 @@
 import * as types from './actionTypes';
 import Immutable from 'seamless-immutable';
 
-const initialState = Immutable({
-  root: undefined,
-  providers: undefined
+const initialState:AppState = Immutable({
+  isInitialized: false,
+  providers: undefined,
+  dataPerFlow: {}
 });
 
 export default function app(state = initialState, action = {}) {
   switch (action.type) {
-    case types.ROOT_CHANGED:
+
+    case types.INITIALIZED:
       return state.merge({
-        root: action.root
+        isInitialized: true
       });
+
+    case types.FLOW_DATA_CHANGED:
+      return state.merge({
+        dataPerFlow: state.dataPerFlow.merge( action.dataPerFlow )
+      });
+
     case types.PROVIDERS_CHANGED:
       return state.merge({
         providers: action.providers

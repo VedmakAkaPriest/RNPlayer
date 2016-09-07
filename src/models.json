@@ -1,0 +1,24 @@
+[
+  {
+    "name": "sources",
+    "title": "Источники",
+    "dataType": 0,
+    "fields": ["title"],
+    "data": [
+      {
+        "title": "ex.ua"
+      }
+    ]
+  },
+  {
+    "name": "categories",
+    "title": "Категории",
+    "dataType": 0,
+    "fields": ["title"],
+    "data": [
+      {
+        "title": "<><><>><"
+      }
+    ]
+  }
+]

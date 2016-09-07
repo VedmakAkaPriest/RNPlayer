@@ -8,11 +8,15 @@ import MediaItemView from './components/MediaItem/MediaItemView';
 import DownloadsView from './components/Downloads/DownloadsView';
 import PlayerView from './components/Player/PlayerView';
 
+import SimpleListView from './screens/SimpleListView';
+
 
 export default function registerScreens(store, Provider) {
   function registerComponent(name, component) {
     Navigation.registerComponent(name, () => component, store, Provider);
   }
+
+  registerComponent('SimpleListView', SimpleListView);
 
   registerComponent('ProvidersView', ProvidersView);
   registerComponent('CategoriesView', CategoriesView);

@@ -1,0 +1,37 @@
+[
+  {
+    "name": "SourceFlow",
+    "screen": "SimpleListView",
+    "root": true,
+    "modelName": "sources",
+    "routes": {
+        "nextFlow": "CategoryFlow"
+      }
+  },
+  {
+    "name": "CategoryFlow",
+    "screen": "SimpleListView",
+    "modelName": "categories",
+    "routes": {
+        "nextFlow": "SubCategoryFlow",
+        "prevFlow": "SourceFlow"
+      }
+  },
+  {
+    "name": "SubCategoryFlow",
+    "screen": "ThumbnailsListView",
+    "modelName": "subCategories",
+    "routes": {
+        "nextFlow": "ItemDetailsFlow",
+        "prevFlow": "CategoryFlow"
+      }
+  },
+  {
+    "name": "ItemDetailsFlow",
+    "screen": "ThumbnailsListView",
+    "modelName": "itemDetails",
+    "routes": {
+        "prevFlow": "SubCategoryFlow"
+      }
+  }
+]
