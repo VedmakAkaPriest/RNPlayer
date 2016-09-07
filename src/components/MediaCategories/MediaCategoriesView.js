@@ -7,64 +7,60 @@ import {
   TouchableHighlight,
   ActivityIndicator
 } from 'react-native';
-import EXMediaSource from '../../service/EXMediaSource'
+import { connect } from 'react-redux';
+import * as SourceActs from '../../reducers/sources/actions';
 
+class MediaCategoriesView extends Component {
 
-export default class MediaCategoriesView extends Component {
-
-  constructor(props){
+  constructor(props) {
     super(props);
-    let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-    const serviceClass = EXMediaSource;
-    let service = new serviceClass();
-    service.fetchCategories().then(cats => {
-      this.setState({
-        dataSource: ds.cloneWithRows(cats),
-        loading: false
-      });
+    props.dispatch(SourceActs.fetchCategories());
+  }
+
+  handleItem(ms) {
+    this.props.dispatch(SourceActs.fetchCategoryItems(ms));
+    this.props.navigator.push({
+      screen: 'MediaCategoryView', // unique ID registered with Navigation.registerScreen
+      title: ms.title, // title of the screen as appears in the nav bar (optional)
     });
-    this.state = {
-      dataSource: ds.cloneWithRows([]),
-      loading: true,
-      service
-    }
+  }
+
+  renderListItem(ms) {
+    return (
+      <TouchableHighlight onPress={ this.handleItem.bind(this, ms) } activeOpacity={ 100 } underlayColor="#ea4b54">
+        <View style={ styles.itemContainer }>
+          <Text style={ styles.sourceTitle }>{ ms.title }</Text>
+        </View>
+      </TouchableHighlight>
+    );
   }
 
   render() {
-    if (this.state.loading) {
+    if (this.props.loading) {
       return (
-        <ActivityIndicator animating={this.state.loading} style={[styles.centering, {height: 80}]} size="large" />
+        <ActivityIndicator animating={this.props.loading} style={[styles.centering, {height: 80}]} size="large" />
       )
     }
     return (
       <View style={styles.container}>
         <ListView enableEmptySections={true}
-          dataSource={this.state.dataSource}
-          renderRow={ ( ms ) => <CategoryListItem navigator={this.props.navigator} mediaSource={ ms } service={this.props.service} /> } />
+          dataSource={this.props.dataSource}
+          renderRow={ this.renderListItem.bind(this) } />
       </View>
     )
   }
 }
 
-class CategoryListItem extends Component {
-  handleItem() {
-    this.props.navigator.push({
-      screen: 'MediaCategoryView', // unique ID registered with Navigation.registerScreen
-      title: 'Categories', // title of the screen as appears in the nav bar (optional)
-      passProps: {category:this.props.mediaSource, service: this.props.service}
-    });
-  }
 
-  render() {
-    return (
-      <TouchableHighlight onPress={ this.handleItem.bind(this) } activeOpacity={ 100 } underlayColor="#ea4b54">
-        <View style={ styles.itemContainer }>
-          <Text style={ styles.sourceTitle }>{ this.props.mediaSource.title }</Text>
-        </View>
-      </TouchableHighlight>
-    );
-  }
+const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+function mapStateToProps(state) {
+  return {
+    dataSource: ds.cloneWithRows( state.sources.categories ),
+    loading: state.sources.loading
+  };
 }
+
+export default connect(mapStateToProps)(MediaCategoriesView);
 
 const styles = StyleSheet.create({
   container: {

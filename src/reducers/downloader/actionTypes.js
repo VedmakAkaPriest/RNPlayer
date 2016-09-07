@@ -1,0 +1,10 @@
+export const RECEIVE_HISTORY = 'downloader.RECEIVE_HISTORY';
+export const IN_PROGRESS_CHANGED = 'downloader.IN_PROGRESS_CHANGED';
+export const COMPLETED_CHANGED = 'downloader.COMPLETED_CHANGED';
+export const SYNCDB_COMPLETE = 'downloader.SYNCDB_COMPLETE';
+export const REQUEST_FILES = 'downloader.REQUEST_FILES';
+export const RECEIVE_FILES = 'downloader.RECEIVE_FILES';
+export const DOWNLOAD_BEGIN = 'downloader.DOWNLOAD_BEGIN';
+export const DOWNLOAD_PROGRESS = 'downloader.DOWNLOAD_PROGRESS';
+export const DOWNLOAD_COMPLETE = 'downloader.DOWNLOAD_COMPLETE';
+export const DOWNLOAD_FAILED = 'downloader.DOWNLOAD_FAILED';

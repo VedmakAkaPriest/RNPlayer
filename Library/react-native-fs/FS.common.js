@@ -173,6 +173,7 @@ var RNFS = {
     if (typeof options.toFile !== 'string') throw new Error('downloadFile: Invalid value for property `toFile`');
     if (options.headers && typeof options.headers !== 'object') throw new Error('downloadFile: Invalid value for property `headers`');
     if (options.background && typeof options.background !== 'boolean') throw new Error('downloadFile: Invalid value for property `background`');
+    if (options.progressDivider !== undefined && typeof options.progressDivider !== 'number') throw new Error('downloadFile: Invalid value for property `progressDivider`');
 
     var jobId = getJobId();
     var subscriptions = [];
@@ -191,6 +192,7 @@ var RNFS = {
       toFile: options.toFile,
       headers: options.headers || {},
       background: !!options.background,
+      progressDivider: options.progressDivider === undefined ? 0 : options.progressDivider
     };
 
     return _downloadFile(bridgeOptions)

@@ -1,0 +1,44 @@
+[
+  {
+    "name": "ex.ua",
+    "title": "ex.ua",
+    "baseFetchLink": "http://ex.ua",
+    "screens": [
+      {
+        "title": "Сервисы",
+        "name": "exua.services",
+        "template": "MediaCategoriesView",
+        "items": [
+          {
+            "title": "Видео",
+            "link": "/ru/video"
+          }
+        ],
+        "next": {
+          "name": "exua.categories",
+          "props": {
+            "item": "${selectedItem}"
+          }
+        }
+      },
+      {
+        "title": "Категории",
+        "name": "exua.categories",
+        "template": "CategoriesView",
+        "items": {
+          "fetchUrl": "${params.item.link}",
+          "props": {
+            "title": "//table[@class='include_0']//a[not(@class='info')]",
+            "link": "//table[@class='include_0']//a[not(@class='info')]/@href"
+          }
+        },
+        "next": {
+          "name": "exua.subCategories",
+          "props": {
+            "item": "${selectedItem}"
+          }
+        }
+      }
+    ]
+  }
+]

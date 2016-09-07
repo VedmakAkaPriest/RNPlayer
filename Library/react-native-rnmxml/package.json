@@ -1,0 +1,12 @@
+{
+  "name": "react-native-rnmxml",
+  "version": "0.0.1",
+  "description": "React Native XML/HTML XPath parser",
+  "nativePackage": true,
+  "main": "RNMXml.common.js",
+  "license": "MIT",
+  "peerDependencies": {
+    "react-native": ">=0.25.1",
+    "react": ">=0.14.5"
+  }
+}

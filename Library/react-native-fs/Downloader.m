@@ -65,6 +65,12 @@
   }
 
   if ([_statusCode isEqualToNumber:[NSNumber numberWithInt:200]]) {
+    if (_params.progressDivider.boolValue) {
+      long long nextProgress = _bytesWritten.longLongValue + _params.progressDivider.longLongValue;
+      if (nextProgress > bytesWritten) {
+        return;
+      }
+    }
     _bytesWritten = @(totalBytesWritten);
     return _params.progressCallback(_contentLength, _bytesWritten);
   }

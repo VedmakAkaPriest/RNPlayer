@@ -28,63 +28,63 @@ RCT_EXPORT_MODULE();
 
 - (dispatch_queue_t)methodQueue
 {
-  return dispatch_queue_create("pe.lum.rnfs", DISPATCH_QUEUE_SERIAL);
+    return dispatch_queue_create("pe.lum.rnfs", DISPATCH_QUEUE_SERIAL);
 }
 
 RCT_EXPORT_METHOD(readDir:(NSString *)dirPath
                   callback:(RCTResponseSenderBlock)callback)
 {
-  NSFileManager *fileManager = [NSFileManager defaultManager];
-  NSError *error = nil;
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *error = nil;
 
-  NSArray *contents = [fileManager contentsOfDirectoryAtPath:dirPath error:&error];
+    NSArray *contents = [fileManager contentsOfDirectoryAtPath:dirPath error:&error];
 
-  contents = [contents rnfs_mapObjectsUsingBlock:^id(NSString *obj, NSUInteger idx) {
-    NSString *path = [dirPath stringByAppendingPathComponent:obj];
-    NSDictionary *attributes = [fileManager attributesOfItemAtPath:path error:nil];
+    contents = [contents rnfs_mapObjectsUsingBlock:^id(NSString *obj, NSUInteger idx) {
+        NSString *path = [dirPath stringByAppendingPathComponent:obj];
+        NSDictionary *attributes = [fileManager attributesOfItemAtPath:path error:nil];
 
-    return @{
-      @"name": obj,
-      @"path": path,
-      @"size": [attributes objectForKey:NSFileSize],
-      @"type": [attributes objectForKey:NSFileType]
-    };
-  }];
+        return @{
+                 @"name": obj,
+                 @"path": path,
+                 @"size": [attributes objectForKey:NSFileSize],
+                 @"type": [attributes objectForKey:NSFileType]
+                 };
+    }];
 
-  if (error) {
-    return callback([self makeErrorPayload:error]);
-  }
+    if (error) {
+        return callback([self makeErrorPayload:error]);
+    }
 
-  callback(@[[NSNull null], contents]);
+    callback(@[[NSNull null], contents]);
 }
 
 RCT_EXPORT_METHOD(exists:(NSString *)filepath
                   callback:(RCTResponseSenderBlock)callback)
 {
-  BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:filepath];
+    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:filepath];
 
-  callback(@[[NSNull null], [NSNumber numberWithBool:fileExists]]);
+    callback(@[[NSNull null], [NSNumber numberWithBool:fileExists]]);
 }
 
 RCT_EXPORT_METHOD(stat:(NSString *)filepath
                   callback:(RCTResponseSenderBlock)callback)
 {
-  NSError *error = nil;
-  NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filepath error:&error];
+    NSError *error = nil;
+    NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filepath error:&error];
 
-  if (error) {
-    return callback([self makeErrorPayload:error]);
-  }
+    if (error) {
+        return callback([self makeErrorPayload:error]);
+    }
 
-  attributes = @{
-    @"ctime": [self dateToTimeIntervalNumber:(NSDate *)[attributes objectForKey:NSFileCreationDate]],
-    @"mtime": [self dateToTimeIntervalNumber:(NSDate *)[attributes objectForKey:NSFileModificationDate]],
-    @"size": [attributes objectForKey:NSFileSize],
-    @"type": [attributes objectForKey:NSFileType],
-    @"mode": @([[NSString stringWithFormat:@"%ld", (long)[(NSNumber *)[attributes objectForKey:NSFilePosixPermissions] integerValue]] integerValue])
-  };
+    attributes = @{
+                   @"ctime": [self dateToTimeIntervalNumber:(NSDate *)[attributes objectForKey:NSFileCreationDate]],
+                   @"mtime": [self dateToTimeIntervalNumber:(NSDate *)[attributes objectForKey:NSFileModificationDate]],
+                   @"size": [attributes objectForKey:NSFileSize],
+                   @"type": [attributes objectForKey:NSFileType],
+                   @"mode": @([[NSString stringWithFormat:@"%ld", (long)[(NSNumber *)[attributes objectForKey:NSFilePosixPermissions] integerValue]] integerValue])
+                   };
 
-  callback(@[[NSNull null], attributes]);
+    callback(@[[NSNull null], attributes]);
 }
 
 RCT_EXPORT_METHOD(writeFile:(NSString *)filepath
@@ -92,70 +92,70 @@ RCT_EXPORT_METHOD(writeFile:(NSString *)filepath
                   attributes:(NSDictionary *)attributes
                   callback:(RCTResponseSenderBlock)callback)
 {
-  NSData *data = [[NSData alloc] initWithBase64EncodedString:base64Content options:NSDataBase64DecodingIgnoreUnknownCharacters];
-  BOOL success = [[NSFileManager defaultManager] createFileAtPath:filepath contents:data attributes:attributes];
+    NSData *data = [[NSData alloc] initWithBase64EncodedString:base64Content options:NSDataBase64DecodingIgnoreUnknownCharacters];
+    BOOL success = [[NSFileManager defaultManager] createFileAtPath:filepath contents:data attributes:attributes];
 
-  if (!success) {
-    return callback(@[[NSString stringWithFormat:@"Could not write file at path %@", filepath]]);
-  }
+    if (!success) {
+        return callback(@[[NSString stringWithFormat:@"Could not write file at path %@", filepath]]);
+    }
 
-  callback(@[[NSNull null], [NSNumber numberWithBool:success], filepath]);
+    callback(@[[NSNull null], [NSNumber numberWithBool:success], filepath]);
 }
 
 RCT_EXPORT_METHOD(unlink:(NSString*)filepath
                   callback:(RCTResponseSenderBlock)callback)
 {
-  NSFileManager *manager = [NSFileManager defaultManager];
-  BOOL exists = [manager fileExistsAtPath:filepath isDirectory:false];
+    NSFileManager *manager = [NSFileManager defaultManager];
+    BOOL exists = [manager fileExistsAtPath:filepath isDirectory:false];
 
-  if (!exists) {
-    return callback(@[[NSString stringWithFormat:@"File at path %@ does not exist", filepath]]);
-  }
-  NSError *error = nil;
-  BOOL success = [manager removeItemAtPath:filepath error:&error];
+    if (!exists) {
+        return callback(@[[NSString stringWithFormat:@"File at path %@ does not exist", filepath]]);
+    }
+    NSError *error = nil;
+    BOOL success = [manager removeItemAtPath:filepath error:&error];
 
-  if (!success) {
-    return callback([self makeErrorPayload:error]);
-  }
+    if (!success) {
+        return callback([self makeErrorPayload:error]);
+    }
 
-  callback(@[[NSNull null], [NSNumber numberWithBool:success], filepath]);
+    callback(@[[NSNull null], [NSNumber numberWithBool:success], filepath]);
 }
 
 RCT_EXPORT_METHOD(mkdir:(NSString*)filepath
                   excludeFromBackup:(BOOL)excludeFromBackup
                   callback:(RCTResponseSenderBlock)callback)
 {
-  NSFileManager *manager = [NSFileManager defaultManager];
+    NSFileManager *manager = [NSFileManager defaultManager];
 
-  NSError *error = nil;
-  BOOL success = [manager createDirectoryAtPath:filepath withIntermediateDirectories:YES attributes:nil error:&error];
+    NSError *error = nil;
+    BOOL success = [manager createDirectoryAtPath:filepath withIntermediateDirectories:YES attributes:nil error:&error];
 
-  if (!success) {
-    return callback([self makeErrorPayload:error]);
-  }
+    if (!success) {
+        return callback([self makeErrorPayload:error]);
+    }
 
-  NSURL *url = [NSURL fileURLWithPath:filepath];
+    NSURL *url = [NSURL fileURLWithPath:filepath];
 
-  success = [url setResourceValue: [NSNumber numberWithBool: excludeFromBackup] forKey: NSURLIsExcludedFromBackupKey error: &error];
+    success = [url setResourceValue: [NSNumber numberWithBool: excludeFromBackup] forKey: NSURLIsExcludedFromBackupKey error: &error];
 
-  if (!success) {
-    return callback([self makeErrorPayload:error]);
-  }
+    if (!success) {
+        return callback([self makeErrorPayload:error]);
+    }
 
-  callback(@[[NSNull null], [NSNumber numberWithBool:success], filepath]);
+    callback(@[[NSNull null], [NSNumber numberWithBool:success], filepath]);
 }
 
 RCT_EXPORT_METHOD(readFile:(NSString *)filepath
                   callback:(RCTResponseSenderBlock)callback)
 {
-  NSData *content = [[NSFileManager defaultManager] contentsAtPath:filepath];
-  NSString *base64Content = [content base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed];
+    NSData *content = [[NSFileManager defaultManager] contentsAtPath:filepath];
+    NSString *base64Content = [content base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed];
 
-  if (!base64Content) {
-    return callback(@[[NSString stringWithFormat:@"Could not read file at path %@", filepath]]);
-  }
+    if (!base64Content) {
+        return callback(@[[NSString stringWithFormat:@"Could not read file at path %@", filepath]]);
+    }
 
-  callback(@[[NSNull null], base64Content]);
+    callback(@[[NSNull null], base64Content]);
 }
 
 RCT_EXPORT_METHOD(moveFile:(NSString *)filepath
@@ -177,114 +177,129 @@ RCT_EXPORT_METHOD(moveFile:(NSString *)filepath
 RCT_EXPORT_METHOD(downloadFile:(NSDictionary *)options
                   callback:(RCTResponseSenderBlock)callback)
 {
-  DownloadParams* params = [DownloadParams alloc];
+    DownloadParams* params = [DownloadParams alloc];
 
-  NSNumber* jobId = options[@"jobId"];
-  params.fromUrl = options[@"fromUrl"];
-  params.toFile = options[@"toFile"];
-  NSDictionary* headers = options[@"headers"];
-  params.headers = headers;
-  NSNumber* background = options[@"background"];
-  params.background = [background boolValue];
+    NSNumber* jobId = options[@"jobId"];
+    params.fromUrl = options[@"fromUrl"];
+    params.toFile = options[@"toFile"];
+    NSDictionary* headers = options[@"headers"];
+    params.headers = headers;
+    NSNumber* background = options[@"background"];
+    params.background = [background boolValue];
+    params.progressDivider = options[@"progressDivider"];
 
-  params.completeCallback = ^(NSNumber* statusCode, NSNumber* bytesWritten) {
-    NSMutableDictionary* result = [[NSMutableDictionary alloc] initWithDictionary: @{@"jobId": jobId,
-                             @"statusCode": statusCode}];
-    if (bytesWritten) {
-      [result setObject:bytesWritten forKey: @"bytesWritten"];
-    }
-    return callback(@[[NSNull null], result]);
-  };
+    params.completeCallback = ^(NSNumber* statusCode, NSNumber* bytesWritten) {
+        NSMutableDictionary* result = [[NSMutableDictionary alloc] initWithDictionary: @{@"jobId": jobId,
+                                                                                         @"statusCode": statusCode,
+                                                                                         @"options": options}];
+        if (bytesWritten) {
+            [result setObject:bytesWritten forKey: @"bytesWritten"];
+        }
+        [self.bridge.eventDispatcher sendAppEventWithName:@"DownloadComplete" body:result];
+        return callback(@[[NSNull null], result]);
+    };
 
-  params.errorCallback = ^(NSError* error) {
-    return callback([self makeErrorPayload:error]);
-  };
+    params.errorCallback = ^(NSError* error) {
+        [self.bridge.eventDispatcher sendAppEventWithName:@"DownloadFailed"
+                                                     body:@{@"jobId": jobId,
+                                                            @"options": options,
+                                                            @"description": error.localizedDescription,
+                                                            @"code": @(error.code)}];
 
-  params.beginCallback = ^(NSNumber* statusCode, NSNumber* contentLength, NSDictionary* headers) {
-    [self.bridge.eventDispatcher sendAppEventWithName:[NSString stringWithFormat:@"DownloadBegin-%@", jobId]
-                                                 body:@{@"jobId": jobId,
-                                                        @"statusCode": statusCode,
-                                                        @"contentLength": contentLength,
-                                                        @"headers": headers}];
-  };
+        return callback([self makeErrorPayload:error]);
+    };
 
-  params.progressCallback = ^(NSNumber* contentLength, NSNumber* bytesWritten) {
-    [self.bridge.eventDispatcher sendAppEventWithName:[NSString stringWithFormat:@"DownloadProgress-%@", jobId]
-                                                 body:@{@"jobId": jobId,
-                                                        @"contentLength": contentLength,
-                                                        @"bytesWritten": bytesWritten}];
-  };
+    params.beginCallback = ^(NSNumber* statusCode, NSNumber* contentLength, NSDictionary* headers) {
+        NSDictionary *body = @{@"jobId": jobId,
+                               @"options": options,
+                               @"statusCode": statusCode,
+                               @"contentLength": contentLength,
+                               @"headers": headers};
+        [self.bridge.eventDispatcher sendAppEventWithName:@"DownloadBegin" body:body];
+        [self.bridge.eventDispatcher sendAppEventWithName:[NSString stringWithFormat:@"DownloadBegin-%@", jobId]
+                                                     body:body];
+    };
 
-  if (!self.downloaders) self.downloaders = [[NSMutableDictionary alloc] init];
+    params.progressCallback = ^(NSNumber* contentLength, NSNumber* bytesWritten) {
+        NSDictionary *body = @{@"jobId": jobId,
+                               @"options": options,
+                               @"contentLength": contentLength,
+                               @"bytesWritten": bytesWritten};
+        [self.bridge.eventDispatcher sendAppEventWithName:@"DownloadProgress" body:body];
+        [self.bridge.eventDispatcher sendAppEventWithName:[NSString stringWithFormat:@"DownloadProgress-%@", jobId]
+                                                     body:body];
+    };
 
-  Downloader* downloader = [Downloader alloc];
+    if (!self.downloaders) self.downloaders = [[NSMutableDictionary alloc] init];
 
-  [downloader downloadFile:params];
+    Downloader* downloader = [Downloader alloc];
 
-  [self.downloaders setValue:downloader forKey:[jobId stringValue]];
+    [downloader downloadFile:params];
+
+    [self.downloaders setValue:downloader forKey:[jobId stringValue]];
 }
 
 RCT_EXPORT_METHOD(stopDownload:(nonnull NSNumber *)jobId)
 {
-  Downloader* downloader = [self.downloaders objectForKey:[jobId stringValue]];
+    Downloader* downloader = [self.downloaders objectForKey:[jobId stringValue]];
 
-  if (downloader != nil) {
-    [downloader stopDownload];
-  }
+    if (downloader != nil) {
+        [downloader stopDownload];
+    }
 }
 
 RCT_EXPORT_METHOD(uploadFiles:(NSDictionary *)options
                   callback:(RCTResponseSenderBlock)callback)
 {
-  UploadParams* params = [UploadParams alloc];
+    UploadParams* params = [UploadParams alloc];
 
-  NSNumber* jobId = options[@"jobId"];
-  params.toUrl = options[@"toUrl"];
-  params.files = options[@"files"];
-  NSDictionary* headers = options[@"headers"];
-  NSDictionary* fields = options[@"fields"];
-  NSString* method = options[@"method"];
-  params.headers = headers;
-  params.fields = fields;
-  params.method = method;
+    NSNumber* jobId = options[@"jobId"];
+    params.toUrl = options[@"toUrl"];
+    params.files = options[@"files"];
+    NSDictionary* headers = options[@"headers"];
+    NSDictionary* fields = options[@"fields"];
+    NSString* method = options[@"method"];
+    params.headers = headers;
+    params.fields = fields;
+    params.method = method;
 
-  params.completeCallback = ^(NSString* response) {
-    NSMutableDictionary* result = [[NSMutableDictionary alloc] initWithDictionary: @{@"jobId": jobId,
-                             @"response": response}];
-    return callback(@[[NSNull null], result]);
-  };
+    params.completeCallback = ^(NSString* response) {
+        NSMutableDictionary* result = [[NSMutableDictionary alloc] initWithDictionary: @{@"jobId": jobId,
+                                                                                         @"response": response}];
+        return callback(@[[NSNull null], result]);
+    };
 
-  params.errorCallback = ^(NSError* error) {
-    return callback([self makeErrorPayload:error]);
-  };
+    params.errorCallback = ^(NSError* error) {
+        return callback([self makeErrorPayload:error]);
+    };
 
-  params.beginCallback = ^() {
-    [self.bridge.eventDispatcher sendAppEventWithName:[NSString stringWithFormat:@"UploadBegin-%@", jobId]
-                                                 body:@{@"jobId": jobId}];
-  };
+    params.beginCallback = ^() {
+        [self.bridge.eventDispatcher sendAppEventWithName:[NSString stringWithFormat:@"UploadBegin-%@", jobId]
+                                                     body:@{@"jobId": jobId}];
+    };
 
-  params.progressCallback = ^(NSNumber* totalBytesExpectedToSend, NSNumber* totalBytesSent) {
-    [self.bridge.eventDispatcher sendAppEventWithName:[NSString stringWithFormat:@"UploadProgress-%@", jobId]
-                                                 body:@{@"totalBytesExpectedToSend": totalBytesExpectedToSend,
-                                                        @"totalBytesSent": totalBytesSent}];
-  };
+    params.progressCallback = ^(NSNumber* totalBytesExpectedToSend, NSNumber* totalBytesSent) {
+        [self.bridge.eventDispatcher sendAppEventWithName:[NSString stringWithFormat:@"UploadProgress-%@", jobId]
+                                                     body:@{@"totalBytesExpectedToSend": totalBytesExpectedToSend,
+                                                            @"totalBytesSent": totalBytesSent}];
+    };
 
-  if (!self.uploaders) self.uploaders = [[NSMutableDictionary alloc] init];
+    if (!self.uploaders) self.uploaders = [[NSMutableDictionary alloc] init];
 
-  Uploader* uploader = [Uploader alloc];
+    Uploader* uploader = [Uploader alloc];
 
-  [uploader uploadFiles:params];
+    [uploader uploadFiles:params];
 
-  [self.uploaders setValue:uploader forKey:[jobId stringValue]];
+    [self.uploaders setValue:uploader forKey:[jobId stringValue]];
 }
 
 RCT_EXPORT_METHOD(stopUpload:(nonnull NSNumber *)jobId)
 {
-  Uploader* uploader = [self.uploaders objectForKey:[jobId stringValue]];
+    Uploader* uploader = [self.uploaders objectForKey:[jobId stringValue]];
 
-  if (uploader != nil) {
-    [uploader stopUpload];
-  }
+    if (uploader != nil) {
+        [uploader stopUpload];
+    }
 }
 
 RCT_EXPORT_METHOD(pathForBundle:(NSString *)bundleNamed
@@ -340,35 +355,35 @@ RCT_EXPORT_METHOD(getFSInfo:(RCTResponseSenderBlock)callback)
 
 - (NSNumber *)dateToTimeIntervalNumber:(NSDate *)date
 {
-  return @([date timeIntervalSince1970]);
+    return @([date timeIntervalSince1970]);
 }
 
 - (NSArray *)makeErrorPayload:(NSError *)error
 {
-  return @[@{
-    @"description": error.localizedDescription,
-    @"code": @(error.code)
-  }];
+    return @[@{
+                 @"description": error.localizedDescription,
+                 @"code": @(error.code)
+                 }];
 }
 
 - (NSString *)getPathForDirectory:(int)directory
 {
-  NSArray *paths = NSSearchPathForDirectoriesInDomains(directory, NSUserDomainMask, YES);
-  return [paths firstObject];
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(directory, NSUserDomainMask, YES);
+    return [paths firstObject];
 }
 
 - (NSDictionary *)constantsToExport
 {
-  return @{
-    @"MainBundlePath": [[NSBundle mainBundle] bundlePath],
-    @"NSCachesDirectoryPath": [self getPathForDirectory:NSCachesDirectory],
-    @"NSDocumentDirectoryPath": [self getPathForDirectory:NSDocumentDirectory],
-    @"NSExternalDirectoryPath": [NSNull null],
-    @"NSTemporaryDirectoryPath": NSTemporaryDirectory(),
-    @"NSLibraryDirectoryPath": [self getPathForDirectory:NSLibraryDirectory],
-    @"NSFileTypeRegular": NSFileTypeRegular,
-    @"NSFileTypeDirectory": NSFileTypeDirectory
-  };
+    return @{
+             @"MainBundlePath": [[NSBundle mainBundle] bundlePath],
+             @"NSCachesDirectoryPath": [self getPathForDirectory:NSCachesDirectory],
+             @"NSDocumentDirectoryPath": [self getPathForDirectory:NSDocumentDirectory],
+             @"NSExternalDirectoryPath": [NSNull null],
+             @"NSTemporaryDirectoryPath": NSTemporaryDirectory(),
+             @"NSLibraryDirectoryPath": [self getPathForDirectory:NSLibraryDirectory],
+             @"NSFileTypeRegular": NSFileTypeRegular,
+             @"NSFileTypeDirectory": NSFileTypeDirectory
+             };
 }
 
 @end
