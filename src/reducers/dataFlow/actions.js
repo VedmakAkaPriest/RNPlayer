@@ -58,7 +58,7 @@ export function applyTransition(transition: types.DFTransition, context) {
     console.log('transition.actions',transition.actions)
 
     let nextStateData;
-    for
+    
     nextState.data = await lo.reduce(transition.actions, async (accum, args, actFunc) => {
       console.log(accum, args, actFunc)
       let rs = await TRANS_FUNC[actFunc].call(context, accum, args);

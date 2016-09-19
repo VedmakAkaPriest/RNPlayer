@@ -8,15 +8,14 @@
     "cli": "node node_modules/react-native/local-cli/cli.js"
   },
   "dependencies": {
-    "react": "15.2.0",
-    "react-native": "0.29.0",
+    "react": "^15.2.1",
     "react-native-fs": "./Library/react-native-fs",
-    "react-native-navigation": "^1.0.26",
+    "react-native-navigation": "^2.0.0-experimental.118",
+    "react-native-rnmxml": "./Library/react-native-rnmxml",
     "react-native-slider": "^0.9.0",
     "react-native-swipe-list-view": "^0.2.1",
     "react-native-vector-icons": "^2.0.3",
     "react-native-video": "./Library/react-native-video",
-    "react-native-rnmxml": "./Library/react-native-rnmxml",
     "react-redux": "^4.4.5",
     "redux": "^3.5.2",
     "redux-logger": "^2.6.1",
