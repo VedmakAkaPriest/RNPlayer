@@ -14,7 +14,7 @@ import * as DownloaderActs from '../../reducers/downloader/actions';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 
-export default class MediaItemView extends Component {
+class MediaItemView extends Component {
 
   constructor(props){
     super(props);

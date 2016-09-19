@@ -8,36 +8,21 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux';
 import { find } from 'lodash';
-import * as AppActions from '../reducers/app/actions';
+import * as FlowActions from '../reducers/dataFlow/actions';
 
 
-const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 class SimpleListView extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      dataSource: ds.cloneWithRows(props.dataPerFlow[props.flow.name])
-    };
-  }
-
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      dataSource: ds.cloneWithRows(nextProps.dataPerFlow[nextProps.flow.name])
-    });
   }
 
   handleItem(listItem) {
-    const nextFlow = find(this.props.flows, { name: this.props.flow.routes.nextFlow });
-    const nextModel = find(this.props.models, { name: nextFlow.modelName });
-
-    this.props.dispatch(AppActions.fetchDataForFlow(nextFlow, nextModel));
-
-    this.props.navigator.push({
-      screen: nextFlow.screen, // unique ID registered with Navigation.registerScreen
-      title: nextModel.title, // title of the screen as appears in the nav bar (optional)
-      passProps: { flow: nextFlow, model: nextModel }
+    const beforeTransition = (nextState, nextModel) => this.props.navigator.push({
+      screen: nextState.screen,
+      title: nextModel.title
     });
+    this.props.dispatch(FlowActions.handleChange(listItem, beforeTransition));
   }
 
   renderListItem(listItem) {
@@ -55,16 +40,17 @@ class SimpleListView extends Component {
     return (
       <View style={styles.container}>
         <ListView enableEmptySections={ true }
-          dataSource={ this.state.dataSource }
+          dataSource={ this.props.dataSource }
           renderRow={ this.renderListItem.bind(this) } />
       </View>
     )
   }
 }
 
+const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 function mapStateToProps(state) {
   return {
-    dataPerFlow: state.app.dataPerFlow,
+    dataSource: ds.cloneWithRows(state.dataFlow.currentState.data),
     flows: state.dataFlow.dataFlow,
     models: state.dataModel.models
   };

@@ -11,7 +11,6 @@ export class DataModel {
   title: String;
   dataType: Number;
   fields: Array<String>;
-  data;
 }
 
 export const DataModelType = {

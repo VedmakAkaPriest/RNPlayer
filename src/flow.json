@@ -1,37 +1,97 @@
-[
-  {
-    "name": "SourceFlow",
-    "screen": "SimpleListView",
-    "root": true,
-    "modelName": "sources",
-    "routes": {
-        "nextFlow": "CategoryFlow"
+{
+  "transitions": [
+    {
+      "name": "root",
+      "to": "Source",
+      "actions": {
+        "static": [{
+          "title": "ex.ua"
+        }]
       }
-  },
-  {
-    "name": "CategoryFlow",
-    "screen": "SimpleListView",
-    "modelName": "categories",
-    "routes": {
-        "nextFlow": "SubCategoryFlow",
-        "prevFlow": "SourceFlow"
+    },
+    {
+      "name": "categories",
+      "from": "Source",
+      "to": "Category",
+      "actions": {
+        "fetch": "http://www.ex.ua/ru/video",
+        "text": "results",
+        "queryHtml": [
+          "//table[@class='include_0']//a[not(@class='info')]",
+          "//table[@class='include_0']//a[not(@class='info')]/@href"
+        ],
+        "map": ["title", "link"]
       }
-  },
-  {
-    "name": "SubCategoryFlow",
-    "screen": "ThumbnailsListView",
-    "modelName": "subCategories",
-    "routes": {
-        "nextFlow": "ItemDetailsFlow",
-        "prevFlow": "CategoryFlow"
+    },
+    {
+      "name": "subcategories",
+      "from": "Category",
+      "to": "SubCategory",
+      "actions": {
+        "fetch": "/ru/video",
+        "text": "results",
+        "queryHtml": [
+          "//table[@class='include_0']//a[not(@class='info')]",
+          "//table[@class='include_0']//a[not(@class='info')]/@href"
+        ],
+        "map": ["title", "link"]
       }
-  },
-  {
-    "name": "ItemDetailsFlow",
-    "screen": "ThumbnailsListView",
-    "modelName": "itemDetails",
-    "routes": {
-        "prevFlow": "SubCategoryFlow"
+    },
+    {
+      "name": "details",
+      "from": "SubCategory",
+      "to": "ItemDetails",
+      "actions": {
+        "fetch": "/ru/video",
+        "text": "results",
+        "queryHtml": [
+          "//table[@class='include_0']//a[not(@class='info')]",
+          "//table[@class='include_0']//a[not(@class='info')]/@href"
+        ],
+        "map": ["title", "link"]
       }
-  }
-]
+    },
+    {
+      "name": "play",
+      "from": "ItemDetails",
+      "to": "Player",
+      "actions": {
+        "fetch": "/ru/video",
+        "text": "results",
+        "queryHtml": [
+          "//table[@class='include_0']//a[not(@class='info')]",
+          "//table[@class='include_0']//a[not(@class='info')]/@href"
+        ],
+        "map": ["title", "link"]
+      }
+    }
+  ],
+  "states": [
+    {
+      "name": "Source",
+      "screen": "SimpleListView",
+      "model": "sources"
+    },
+    {
+      "name": "Category",
+      "screen": "SimpleListView",
+      "model": "categories"
+    },
+    {
+      "name": "SubCategory",
+      "screen": "ThumbnailsListView",
+      "modelName": "subCategories"
+    },
+    {
+      "name": "ItemDetails",
+      "screen": "ThumbnailsListView",
+      "modelName": "itemDetails"
+    },
+    {
+      "name": "Player",
+      "screen": "PlayerView",
+      "modelName": "itemDetails"
+    }
+  ],
+  "init": "root"
+}

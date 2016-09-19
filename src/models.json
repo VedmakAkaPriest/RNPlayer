@@ -14,7 +14,7 @@
     "name": "categories",
     "title": "Категории",
     "dataType": 0,
-    "fields": ["title"],
+    "fields": ["title", "link"],
     "data": [
       {
         "title": "<><><>><"

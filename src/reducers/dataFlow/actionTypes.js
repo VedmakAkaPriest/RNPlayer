@@ -1,4 +1,5 @@
 export const INITIALIZED = 'dataFlow.INITIALIZED';
+export const FLOW_STATE_CHANGE = 'dataFlow.FLOW_STATE_CHANGE';
 
 export class DataFlowState {
   isInitialized: Boolean;
@@ -6,15 +7,23 @@ export class DataFlowState {
   root: DataFlow;
 }
 
-export class DataFlow {
-  name: String;
-  screen: String;
-  modelName: String;
-  root: Boolean;
-  routes: DataFlowRoute;
+
+export class DFState {
+  name:String;
+
+  screen:String;
+  model:String;
+
+  // transient
+  data;
 }
 
-export class DataFlowRoute {
-  nextFlow: String;
-  prevFlow: String;
+export class DFTransition {
+  name: String;
+
+  from: DataFlowState;
+  to: DataFlowState;
+
+  conditions: Array<String>;
+  actions: Array<String>;
 }

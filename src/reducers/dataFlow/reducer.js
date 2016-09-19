@@ -4,21 +4,24 @@ import { find } from 'lodash';
 
 const initialState:types.DataFlowState = Immutable({
   isInitialized: false,
-  dataFlow: [],
+  states: [],
+  transitions: [],
+  currentState: null
 });
 
+const ACTION_HANDLERS = {
+  [types.INITIALIZED]: (state, action) => state.merge({
+    states: action.states,
+    transitions: action.transitions,
+    isInitialized: true
+  }),
+  [types.FLOW_STATE_CHANGE]: (state, action) => state.merge({
+    currentState: action.to
+  })
+};
+
 export default function sources(state = initialState, action = {}) {
-  switch (action.type) {
+  const handler = ACTION_HANDLERS[action.type];
 
-    case types.INITIALIZED:
-      const rootFlow:types.DataFlow = find(action.flows, {root: true});
-      return state.merge({
-        dataFlow: action.flows,
-        root: rootFlow,
-        isInitialized: true
-      });
-
-    default:
-      return state;
-  }
+  return handler ? handler(state, action) : state;
 }

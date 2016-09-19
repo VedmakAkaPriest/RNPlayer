@@ -1,8 +1,10 @@
 package com.rnplayer;
 
 import com.facebook.react.ReactActivity;
-import com.oblador.vectoricons.VectorIconsPackage;
 import com.brentvatne.RCTVideo.ReactVideoPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
+import com.reactnativenavigation.RnnPackage;
+import com.rnfs.RNFSPackage;
 
 public class MainActivity extends ReactActivity {
 

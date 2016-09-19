@@ -10,7 +10,7 @@ import * as appActions from './reducers/app/actions';
 import * as downloaderActions from './reducers/downloader/actions';
 import * as flowActions from './reducers/dataFlow/actions';
 import * as dataActions from './reducers/dataModel/actions';
-import { DataFlow } from './reducers/dataFlow/actionTypes';
+import { DFState } from './reducers/dataFlow/actionTypes';
 import { DataModel } from './reducers/dataModel/actionTypes';
 
 // redux related book keeping
@@ -24,6 +24,7 @@ import registerScreens from './routes';
 registerScreens(store, Provider);
 
 
+let NAVIGATOR;
 export default class App {
   isStarted = false;
 
@@ -39,25 +40,24 @@ export default class App {
   }
 
   onStoreUpdate() {
+    const { app, dataFlow, dataModel } = store.getState();
+
     if (this.isStarted) {
       return;
     }
 
-    const { app, dataFlow, dataModel } = store.getState();
-
     if (app.isInitialized) {
-      const rootView:DataFlow = dataFlow.root;
-      this.startApp(rootView, dataModel.models[rootView.modelName]);
+      const rootView:DFState = dataFlow.currentState;
+      this.startApp(rootView, dataModel.models[rootView.model]);
     }
     else if (dataFlow.isInitialized && dataModel.isInitialized) {
       store.dispatch(appActions.appInitialized());
     }
   }
 
-  startApp(root:DataFlow, model:DataModel) {
+  startApp(root:DFState, model:DataModel) {
     this.isStarted = true;
     store.dispatch(downloaderActions.init());
-    store.dispatch(appActions.fetchDataForFlow(root, model));
 
     Navigation.startSingleScreenApp({
       screen: {
@@ -74,7 +74,6 @@ export default class App {
           ]
         }
       },
-      passProps: { flow: root, model },
     });
   }
 }
