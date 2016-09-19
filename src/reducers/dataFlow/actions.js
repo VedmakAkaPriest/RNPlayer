@@ -55,14 +55,17 @@ export function applyTransition(transition: types.DFTransition, context) {
   return async function(dispatch, getState) {
     const nextState = transition.to;
     console.log('nextState',nextState)
-    console.log('transition.actions',transition.actions)
+    console.warn('transition.actions',transition.actions)
 
-    let nextStateData;
-    
+    let nextStateData, accumulator;
+    for (let actFunc in transition.actions) {
+      let args = transition.actions[actFunc];
+      console.warn(accumulator, args, actFunc)
+      accumulator = await TRANS_FUNC[actFunc].call(context, accumulator, args);
+      console.warn('>>>>>>> rs', accumulator);
+    }
     nextState.data = await lo.reduce(transition.actions, async (accum, args, actFunc) => {
-      console.log(accum, args, actFunc)
-      let rs = await TRANS_FUNC[actFunc].call(context, accum, args);
-      console.log('>>>>>>> rs', rs);
+      let rs = await TRANS_FUNC[actFunc].bind(context)(accum, args);
       return rs;
     }, null);
     console.log('nextState.data',nextState.data)
@@ -73,7 +76,7 @@ export function applyTransition(transition: types.DFTransition, context) {
 
 const TRANS_FUNC = {
   "static": (_, args) => Promise.resolve(args),
-  "fetch": (_, args) => fetch(args[0]),
+  "fetch": (_, url) => fetch(url),
   "text": (results) => results.text(),
   "queryHtml": (results, args) => xml.queryHtml(results, args),
   "map": (results, fields) => {
