@@ -4,11 +4,11 @@ import { DataFlow } from '../dataFlow/actionTypes';
 import { DataModel } from '../dataModel/actionTypes';
 
 
-export function appInitialized() {
+export function appInitialized(rootView, rootModel) {
   return async function(dispatch, getState) {
 
-    let providers = require('../../providers.json');
     try {
+      let providers = require('../../providers.json');
       const providersFile = await RNFS.readFile(RNFS.DocumentDirectoryPath + '/plugins/providers.json');
       providers = JSON.parse(providersFile);
     }
@@ -16,7 +16,7 @@ export function appInitialized() {
 
     //dispatch({type:types.PROVIDERS_CHANGED, providers});
 
-    dispatch({type:types.INITIALIZED});
+    dispatch({type:types.INITIALIZED, rootView, rootModel});
   };
 }
 

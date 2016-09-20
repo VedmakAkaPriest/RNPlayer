@@ -7,7 +7,7 @@ import {
   TouchableHighlight
 } from 'react-native';
 import { connect } from 'react-redux';
-import { find } from 'lodash';
+import * as lo from 'lodash';
 import * as FlowActions from '../reducers/dataFlow/actions';
 
 
@@ -50,7 +50,7 @@ class SimpleListView extends Component {
 const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 function mapStateToProps(state) {
   return {
-    dataSource: ds.cloneWithRows(state.dataFlow.currentState.data),
+    dataSource: ds.cloneWithRows(lo.get(state.dataFlow, 'currentState.data', [])),
     flows: state.dataFlow.dataFlow,
     models: state.dataModel.models
   };

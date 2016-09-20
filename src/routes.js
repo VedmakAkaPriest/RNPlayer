@@ -1,4 +1,7 @@
-import { Navigation } from 'react-native-navigation';
+import React, { Component } from 'react';
+import { AppRegistry } from 'react-native';
+
+import AppWrapper from './screens/AppWrapper';
 
 import ProvidersView from './components/Providers/ProvidersView';
 import CategoriesView from './components/CategoriesView';
@@ -12,8 +15,10 @@ import SimpleListView from './screens/SimpleListView';
 
 
 export default function registerScreens(store, Provider) {
-  function registerComponent(name, component) {
-    Navigation.registerComponent(name, () => component, store, Provider);
+  const componentBuilder = {};
+
+  function registerComponent(name, InternalComponent) {
+    componentBuilder[name] = () => InternalComponent;
   }
 
   registerComponent('SimpleListView', SimpleListView);
@@ -25,4 +30,31 @@ export default function registerScreens(store, Provider) {
   registerComponent('MediaItemView', MediaItemView);
   registerComponent('DownloadsView', DownloadsView);
   registerComponent('PlayerView', PlayerView);
+
+  const generatorWrapper = function() {
+    return class extends Component {
+
+      constructor(props) {
+        super(props);
+        this.state = {
+          internalProps: {...props}
+        }
+      }
+
+      componentWillReceiveProps(nextProps) {
+        this.setState({
+          internalProps: {...nextProps}
+        })
+      }
+
+      render() {
+        return (
+          <Provider store={store}>
+            <AppWrapper componentBuilder={ componentBuilder } {...this.props} />
+          </Provider>
+        );
+      }
+    };
+  };
+  AppRegistry.registerComponent('RNPlayer', generatorWrapper);
 }

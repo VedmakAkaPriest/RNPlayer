@@ -4,7 +4,9 @@ import Immutable from 'seamless-immutable';
 const initialState:AppState = Immutable({
   isInitialized: false,
   providers: undefined,
-  dataPerFlow: {}
+  dataPerFlow: {},
+  rootView:null,
+  rootModel: null
 });
 
 export default function app(state = initialState, action = {}) {
@@ -12,7 +14,9 @@ export default function app(state = initialState, action = {}) {
 
     case types.INITIALIZED:
       return state.merge({
-        isInitialized: true
+        isInitialized: true,
+        rootView: action.rootView,
+        rootModel: action.rootModel
       });
 
     case types.FLOW_DATA_CHANGED:

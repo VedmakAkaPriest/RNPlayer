@@ -45,6 +45,7 @@ export function handleChange(item, beforeTransition) {
     */
     const transition = availTrans[0];
 
+    dispatch({type:types.FLOW_STATE_CHANGE, from: transition.from, to: transition.to});
     beforeTransition && beforeTransition(transition.to, getState().dataModel.models[transition.to.model]);
 
     dispatch(applyTransition(transition.asMutable(), item));
@@ -60,9 +61,9 @@ export function applyTransition(transition: types.DFTransition, context) {
     let nextStateData, accumulator;
     for (let actFunc in transition.actions) {
       let args = transition.actions[actFunc];
-      console.warn(accumulator, args, actFunc)
+      //console.warn(accumulator, args, actFunc)
       accumulator = await TRANS_FUNC[actFunc].call(context, accumulator, args);
-      console.warn('>>>>>>> rs', accumulator);
+      //console.warn('>>>>>>> rs', accumulator);
     }
     nextState.data = await lo.reduce(transition.actions, async (accum, args, actFunc) => {
       let rs = await TRANS_FUNC[actFunc].bind(context)(accum, args);

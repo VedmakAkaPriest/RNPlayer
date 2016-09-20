@@ -1,9 +1,8 @@
+import { AppRegistry } from 'react-native';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
-import { Navigation } from 'react-native-navigation';
 import thunk from 'redux-thunk';
 import createLogger from 'redux-logger';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import * as reducers from './reducers';
 import * as appActions from './reducers/app/actions';
@@ -23,57 +22,29 @@ const store = createStoreWithMiddleware(reducer);
 import registerScreens from './routes';
 registerScreens(store, Provider);
 
+// wrapper
+import AppWrapper from './screens/AppWrapper';
 
-let NAVIGATOR;
+
 export default class App {
-  isStarted = false;
 
   constructor(navigator = {}, downloadIcon='') {
     // since react-redux only works on components, we need to subscribe this class manually
     store.subscribe(this.onStoreUpdate.bind(this));
-    Ionicons.getImageSource('ios-download-outline', 30, '#fff').then(iconPath => {
-      this.downloadIcon = iconPath;
+    store.dispatch(flowActions.init());
+    store.dispatch(dataActions.init());
 
-      store.dispatch(flowActions.init());
-      store.dispatch(dataActions.init());
-    });
   }
 
   onStoreUpdate() {
     const { app, dataFlow, dataModel } = store.getState();
 
-    if (this.isStarted) {
-      return;
-    }
-
-    if (app.isInitialized) {
+    if (!app.isInitialized && dataFlow.isInitialized && dataModel.isInitialized) {
       const rootView:DFState = dataFlow.currentState;
-      this.startApp(rootView, dataModel.models[rootView.model]);
-    }
-    else if (dataFlow.isInitialized && dataModel.isInitialized) {
-      store.dispatch(appActions.appInitialized());
-    }
-  }
+      const rootModel = dataModel.models[rootView.model]
+      store.dispatch(downloaderActions.init());
 
-  startApp(root:DFState, model:DataModel) {
-    this.isStarted = true;
-    store.dispatch(downloaderActions.init());
-
-    Navigation.startSingleScreenApp({
-      screen: {
-        screen: root.screen, // unique ID registered with Navigation.registerScreen
-        title: model.title, // title of the screen as appears in the nav bar (optional)
-        navigatorStyle: {}, // override the navigator style for the screen, see "Styling the navigator" below (optional)
-        navigatorButtons: { // override the nav buttons for the screen, see "Adding buttons to the navigator" below (optional)
-          rightButtons: [
-            {
-              icon: this.downloadIcon,
-              title: 'Загрузки', // for icon button, provide the local image asset name
-              id: 'downloads' // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
-            }
-          ]
-        }
-      },
-    });
+      store.dispatch(appActions.appInitialized(rootView, rootModel));
+    }
   }
 }
