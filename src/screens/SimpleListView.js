@@ -18,7 +18,7 @@ class SimpleListView extends Component {
   }
 
   handleItem(listItem) {
-    const beforeTransition = (nextState, nextModel) => this.props.navigator.push({
+    const beforeTransition = (nextState, nextModel) => console.log(nextState)&&this.props.navigator.push({
       screen: nextState.screen,
       title: nextModel.title
     });

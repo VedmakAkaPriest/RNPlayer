@@ -5,6 +5,8 @@ const xml = require('react-native').NativeModules.RNMXml;
 import * as lo from 'lodash';
 
 export function init() {
+  console.log('xml', xml);
+    console.log('modules', require('react-native').NativeModules);
   return async function(dispatch, getState) {
 
     let flows = require('../../flow.json');
@@ -54,36 +56,32 @@ export function handleChange(item, beforeTransition) {
 
 export function applyTransition(transition: types.DFTransition, context) {
   return async function(dispatch, getState) {
-    const nextState = transition.to;
-    console.log('nextState',nextState)
-    console.warn('transition.actions',transition.actions)
+    const nextState = Immutable.isImmutable(transition.to) ? transition.to.asMutable() : transition.to;
 
     let nextStateData, accumulator;
     for (let actFunc in transition.actions) {
       let args = transition.actions[actFunc];
-      //console.warn(accumulator, args, actFunc)
-      accumulator = await TRANS_FUNC[actFunc].call(context, accumulator, args);
-      //console.warn('>>>>>>> rs', accumulator);
+      accumulator = await TRANS_FUNC[actFunc].bind(context)(accumulator, args);
     }
-    nextState.data = await lo.reduce(transition.actions, async (accum, args, actFunc) => {
-      let rs = await TRANS_FUNC[actFunc].bind(context)(accum, args);
-      return rs;
-    }, null);
-    console.log('nextState.data',nextState.data)
+    nextState.data = accumulator;
 
     dispatch({type:types.FLOW_STATE_CHANGE, from: transition.from, to: nextState});
   };
 }
 
 const TRANS_FUNC = {
-  "static": (_, args) => Promise.resolve(args),
-  "fetch": (_, url) => fetch(url),
+  "static": function(_, args) { return Promise.resolve(args) },
+  "fetch": function(_, url) { console.log('fetch', this, arguments);return fetch(lo.template(url)(this)) },
   "text": (results) => results.text(),
   "queryHtml": (results, args) => xml.queryHtml(results, args),
   "map": (results, fields) => {
     const maxLen = lo.maxBy(results, 'length').length;
-    return lo.times(maxLen, itemIdx => {
-      lo.mapValues(fields, fieldIdx => lo.get(results, [itemIdx, fieldIdx]))
+    const mapped = [];
+    lo.times(maxLen, itemIdx => {
+      const obj = {};
+      lo.each(fields, (field, fieldIdx) => obj[field]=lo.get(results, [fieldIdx, itemIdx]))
+      mapped.push(obj);
     });
+    return mapped;
   }
 };

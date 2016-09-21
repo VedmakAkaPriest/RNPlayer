@@ -15,6 +15,7 @@ import java.util.List;
 import com.brentvatne.react.ReactVideoPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.rnfs.RNFSPackage;
+import com.rnmxml.RNMXmlPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -31,6 +32,7 @@ public class MainApplication extends Application implements ReactApplication {
               , new ReactVideoPackage()
               , new VectorIconsPackage()
               , new RNFSPackage()
+              , new RNMXmlPackage()
       );
     }
   };

@@ -14,11 +14,20 @@
     "name": "categories",
     "title": "Категории",
     "dataType": 0,
-    "fields": ["title", "link"],
-    "data": [
-      {
-        "title": "<><><>><"
-      }
+    "fields": ["title", "link"]
+  },
+  {
+    "name": "subCategories",
+    "title": "Фильмы",
+    "dataType": 0,
+    "fields": ["title", "link", "poster"]
+    ]
+  },
+  {
+    "name": "itemDetails",
+    "title": "",
+    "dataType": 0,
+    "fields": ["title", "link"]
     ]
   }
 ]

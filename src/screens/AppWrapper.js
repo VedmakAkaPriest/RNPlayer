@@ -91,7 +91,6 @@ class AppWrapper extends Component {
   }
 
   _render(transitionProps) {
-    console.log('transitionProps', transitionProps)
     const InternalComponent = transitionProps.scene.route.component();
 
     return (

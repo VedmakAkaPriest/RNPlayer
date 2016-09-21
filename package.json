@@ -8,6 +8,7 @@
     "cli": "node node_modules/react-native/local-cli/cli.js"
   },
   "dependencies": {
+    "lodash": "^4.16.1",
     "react": "~15.3.1",
     "react-native": "0.33.0",
     "react-native-fs": "./Library/react-native-fs",
