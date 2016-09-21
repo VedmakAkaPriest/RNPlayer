@@ -20,7 +20,7 @@
           "//table[@class='include_0']//a[not(@class='info')]",
           "//table[@class='include_0']//a[not(@class='info')]/@href"
         ],
-        "map": ["title", "link"]
+        "map": "categories"
       }
     },
     {
@@ -35,7 +35,7 @@
             "//table[@class='include_0']//td/a/@href",
             "//table[@class='include_0']//td/a/img/@src"
         ],
-        "map": ["title", "link", "poster"]
+        "map": "subCategories"
       }
     },
     {
@@ -43,13 +43,18 @@
       "from": "SubCategory",
       "to": "ItemDetails",
       "actions": {
-        "fetch": "/ru/video",
+        "fetch": "http://www.ex.ua${link}",
         "text": "results",
         "queryHtml": [
-          "//table[@class='include_0']//a[not(@class='info')]",
-          "//table[@class='include_0']//a[not(@class='info')]/@href"
+          ".//*[@id='body_element']/table[1]//tr/td[1]/h1",
+          ".//*[@id='body_element']/table[1]//tr/td[1]/img/@src",
+          ".//*[@id='body_element']/table[1]//tr/td[1]/p[position() < last()]",
+          ".//*[@id='body_element']/table[3]//tr[position() > 1]/td/a[@title]",
+          ".//*[@id='body_element']/table[3]//tr[position() > 1]/td/a[@title]/@href",
+          ".//*[@id='body_element']/table[3]//tr[position() > 1]/td[4]/b",
+          ".//*[@id='body_element']/table[3]//tr[position() > 1]/td[4]/p[1]/text()"
         ],
-        "map": ["title", "link"]
+        "map": "itemDetails"
       }
     },
     {
@@ -85,7 +90,7 @@
     },
     {
       "name": "ItemDetails",
-      "screen": "ThumbnailsListView",
+      "screen": "DetailsView",
       "model": "itemDetails"
     },
     {

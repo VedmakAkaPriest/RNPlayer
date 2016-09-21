@@ -31,7 +31,6 @@ export default class App {
   constructor(navigator = {}, downloadIcon='') {
     // since react-redux only works on components, we need to subscribe this class manually
     store.subscribe(this.onStoreUpdate.bind(this));
-    store.dispatch(flowActions.init());
     store.dispatch(dataActions.init());
 
   }
@@ -39,12 +38,23 @@ export default class App {
   onStoreUpdate() {
     const { app, dataFlow, dataModel } = store.getState();
 
-    if (!app.isInitialized && dataFlow.isInitialized && dataModel.isInitialized) {
-      const rootView:DFState = dataFlow.currentState;
-      const rootModel = dataModel.models[rootView.model]
-      store.dispatch(downloaderActions.init());
+    if (!app.isInitialized) { // Need to init all
+      if (dataModel.isInitialized) { // Models is loaded already?
 
-      store.dispatch(appActions.appInitialized(rootView, rootModel));
+        if (!dataFlow.isInitialized) { // First, flow must be loaded
+          store.dispatch(flowActions.init());
+        }
+        else if (dataFlow.currentState) { // all ok, finish
+          const rootView:DFState = dataFlow.currentState;
+          const rootModel = rootView.model;
+
+          store.dispatch(downloaderActions.init());
+          store.dispatch(appActions.appInitialized(rootView, rootModel));
+        }
+      }
     }
   }
 }
+
+// Utils
+log = console.log;

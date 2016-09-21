@@ -14,18 +14,28 @@ import * as lo from 'lodash';
 
 const NavigationBarHeight = 44;
 class AppWrapper extends Component {
-  constructor(props, ...varargs) {
-    super(props, ...varargs);
+  constructor(props, context) {
+    super(props, context);
     this.state = {
       downloadIcon: null
     };
-    Ionicons.getImageSource('ios-download-outline', 30, '#fff')
-      .then(downloadIcon => this.setState({ downloadIcon }));
+    this.state.navigationState = this.getNavigationState(props);
+    Promise.all([
+      Ionicons.getImageSource('ios-download-outline', 30, '#fff'),
+      Ionicons.getImageSource('ios-arrow-back-outline', 30, '#fff')
+        ]).then(icons => this.setState({ downloadIcon: icons[0], backIcon: icons[1] }));
   }
 
-  componentWillReceiveProps(nextProps: Props) {
+  componentWillReceiveProps(nextProps) {
     if (nextProps.isInitialized && !this.state.navigationState) {
-      const navigationState = {
+      const navigationState = this.getNavigationState(nextProps);
+      this.setState({ navigationState });
+    }
+  }
+
+  getNavigationState(nextProps) {
+    if (nextProps.isInitialized && !this.state.navigationState) {
+      return {
         index: 0, // Starts with first route focused.
         routes: [{
           key: lo.uniqueId('Route-'),
@@ -34,12 +44,11 @@ class AppWrapper extends Component {
           component: nextProps.componentBuilder[nextProps.rootView.screen]
         }]
       };
-      this.setState({ navigationState });
     }
   }
 
   push = (nextScreenProps) => {
-    console.log('push', nextScreenProps)
+    //console.log('push', nextScreenProps)
     // Push a new route, which in our case is an object with a key value.
     const route = {
       key: lo.uniqueId('Route-'),
@@ -92,7 +101,7 @@ class AppWrapper extends Component {
 
   _render(transitionProps) {
     const InternalComponent = transitionProps.scene.route.component();
-
+    //log(transitionProps)
     return (
       <Animated.View
         style={[styles.scene, this._getAnimatedStyle(transitionProps)]}>
@@ -101,6 +110,8 @@ class AppWrapper extends Component {
           height={ NavigationBarHeight }
           titleColor={ '#fff' }
           backgroundColor={ '#149be0' }
+          leftButtonIcon={ transitionProps.scene.index > 0 ? this.state.backIcon : null }
+          leftButtonTitleColor={ '#fff' }
           onLeftButtonPress={ undefined }
           rightButtonIcon={ this.state.downloadIcon }
           rightButtonTitleColor={ '#fff' }

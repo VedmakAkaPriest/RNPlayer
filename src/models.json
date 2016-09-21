@@ -3,7 +3,6 @@
     "name": "sources",
     "title": "Источники",
     "dataType": 0,
-    "fields": ["title"],
     "data": [
       {
         "title": "ex.ua"
@@ -14,20 +13,40 @@
     "name": "categories",
     "title": "Категории",
     "dataType": 0,
-    "fields": ["title", "link"]
+    "mapper": {
+      "title": 0,
+      "link": 1
+    }
   },
   {
     "name": "subCategories",
     "title": "Фильмы",
     "dataType": 0,
-    "fields": ["title", "link", "poster"]
-    ]
+    "mapper": {
+      "title": 0,
+      "link": 1,
+      "poster": 2
+    }
   },
   {
     "name": "itemDetails",
-    "title": "",
+    "title": "${title}",
+    "dataType": 1,
+    "mapper": {
+      "title": [0, 0],
+      "poster": [1, 0],
+      "details": [2, 0],
+      "downloads": "itemDetailsDownloads"
+    }
+  },
+  {
+    "name": "itemDetailsDownloads",
     "dataType": 0,
-    "fields": ["title", "link"]
-    ]
+    "mapper": {
+      "title": 3,
+      "link": 4,
+      "size": 5,
+      "info": "<% __results[6][idx*3] %> - <% __results[6][idx*3+2] %>"
+    }
   }
 ]
