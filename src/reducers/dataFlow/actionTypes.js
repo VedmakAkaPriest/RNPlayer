@@ -1,5 +1,6 @@
 export const INITIALIZED = 'dataFlow.INITIALIZED';
-export const FLOW_STATE_CHANGE = 'dataFlow.FLOW_STATE_CHANGE';
+export const FLOW_STATE_CHANGED = 'dataFlow.FLOW_STATE_CHANGED';
+export const FLOW_TRANSITION_START = 'dataFlow.FLOW_TRANSITION_START';
 
 export class DataFlowState {
   isInitialized: Boolean;

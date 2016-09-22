@@ -46,7 +46,7 @@
       "title": 3,
       "link": 4,
       "size": 5,
-      "info": "<% __results[6][idx*3] %> - <% __results[6][idx*3+2] %>"
+      "info": "<%= (''+ __results[6][idx*3] + __results[6][idx*3+2]).trim() %>"
     }
   }
 ]

@@ -5,7 +5,7 @@ import {
   StyleSheet,
   View, ListView, ScrollView, Image, Text,
   TouchableHighlight,
-  ActivityIndicator
+  ActivityIndicator,
 } from 'react-native';
 import { connect } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -20,7 +20,7 @@ class DetailsView extends Component {
       return (
         <View style={ [styles.cardStyle] }>
           <Image source={{uri : this.props.dataSource.poster}} style={styles.cardImageStyle}/>
-            <Text style={ styles.cardContentStyle }>{ this.props.dataSource.title }</Text>
+          <Text style={ styles.cardContentStyle }>{ this.props.dataSource.title }</Text>
           <Text style={ styles.cardContentStyle } key={'item-details-0'}>{ this.props.dataSource.details.trim() }</Text>
         </View>
       );
@@ -53,11 +53,15 @@ class DetailsView extends Component {
                           activeOpacity={ 100 }
                           underlayColor="#ea4b54">
         <View style={styles.row}>
-          <Icon name="ios-checkmark-outline" size={25} color={ alreadyExists ? 'orange' : 'grey' } style={ {alignItems: 'center', justifyContent: 'center'} } />
+          <Icon name="ios-checkmark-outline" size={25}
+                color={ alreadyExists ? 'orange' : 'grey' }
+                style={{ width: 30, alignItems: 'center', justifyContent: 'center' }} />
           <View style={ styles.linkContainer }>
-            <Text style={ styles.sourceTitle }>{ item.title }</Text>
-            <Text style={ styles.linkDetails }>{ item.size }</Text>
-            <Text style={ styles.linkDetails }>{ item.info }</Text>
+            <Text style={{ flex: 1 }}>{ item.title }</Text>
+            <View style={{ alignItems: 'flex-end', width: null,alignSelf: 'stretch' }}>
+              <Text style={ styles.linkDetails }>{ item.size }</Text>
+              <Text style={ styles.linkDetails }>{ item.info }</Text>
+            </View>
           </View>
         </View>
       </TouchableHighlight>
@@ -71,7 +75,6 @@ class DetailsView extends Component {
       )
     }
 
-    log(this.props.dataSource)
     return (
       <ScrollView>
         { this.renderTitle() }
@@ -84,7 +87,7 @@ class DetailsView extends Component {
 function mapStateToProps(state) {
   return {
     dataSource: lo.get(state.dataFlow, 'currentState.data', {}),
-    loading: false
+    loading: state.dataFlow.isProcessing,
   };
 }
 
@@ -103,7 +106,8 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(0,0,0,0.2)',
   },
   linkContainer: {
-    paddingLeft: 10,
+    alignSelf: 'stretch',
+    paddingHorizontal: 10,
   },
   linkDetails: {
     alignItems: 'flex-end',

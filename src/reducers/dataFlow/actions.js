@@ -39,7 +39,7 @@ export function init() {
   };
 }
 
-export function handleChange(item, beforeTransition) {
+export function handleChange(item) {
   return async function(dispatch, getState) {
     const { currentState, transitions } = getState().dataFlow;
 
@@ -49,10 +49,26 @@ export function handleChange(item, beforeTransition) {
     */
     const transition = availTrans[0];
 
-    dispatch({type:types.FLOW_STATE_CHANGE, from: transition.from, to: transition.to});
+    dispatch({type:types.FLOW_TRANSITION_START, from: transition.from, to: transition.to});
     dispatch(applyTransition(transition, item));
 
     return [transition.to, transition.to.model];
+  };
+}
+
+export function restoreState() {
+  return async function(dispatch, getState) {
+    const { currentState, transitions } = getState().dataFlow;
+
+    const availTrans = lo.filter(transitions, { to: { name: currentState.name } });
+    /*
+     * Check conditions
+     */
+    const transition = availTrans[0];
+
+    dispatch({type:types.FLOW_STATE_CHANGED, from: transition.to, to: transition.from});
+
+    return [transition.from, transition.from.model];
   };
 }
 
@@ -71,14 +87,27 @@ export function applyTransition(transition: types.DFTransition, context = {}) {
     }
     nextState.data = context.__results;
 
-    dispatch({type:types.FLOW_STATE_CHANGE, from: transition.from, to: nextState});
+    dispatch({type:types.FLOW_STATE_CHANGED, from: transition.from, to: nextState});
   };
 }
 
 const TRANS_FUNC = {
   "static": function() { return Promise.resolve(this.__arguments) },
   "fetch": function() { return fetch(lo.template(this.__arguments)(this)) },
-  "text": function() { return this.__results.text() },
+  "text": function() {
+    return this.__results.text()
+      .then(r => {
+        if (lo.isString(this.__arguments)) {
+          const params = lo.assign(this, {__results: r});
+          try {
+            log(lo.template(this.__arguments)({__results: r}))
+          }
+          catch(e){console.error(e)}
+          return lo.template(this.__arguments)(this);
+        }
+        return r;
+      });
+  },
   "queryHtml": function() { return xml.queryHtml(this.__results, this.__arguments) },
   "map": function() {
     const model = lo.has(this.__models, this.__arguments) ? this.__models[this.__arguments].asMutable() : null;
