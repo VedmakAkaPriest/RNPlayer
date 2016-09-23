@@ -11,7 +11,6 @@
     "lodash": "^4.16.1",
     "react": "~15.3.1",
     "react-native": "0.33.0",
-    "react-native-fs": "./Library/react-native-fs",
     "react-native-navigation-bar": "^0.1.10",
     "react-native-rnmxml": "./Library/react-native-rnmxml",
     "react-native-slider": "^0.9.0",

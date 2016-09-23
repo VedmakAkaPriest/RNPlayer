@@ -60,7 +60,7 @@
     {
       "name": "play",
       "from": "ItemDetails",
-      "to": "Player",
+      "to": "ItemDetails",
       "actions": {
         "fetch": "/ru/video",
         "text": "results",
@@ -91,11 +91,6 @@
     {
       "name": "ItemDetails",
       "screen": "DetailsView",
-      "model": "itemDetails"
-    },
-    {
-      "name": "Player",
-      "screen": "PlayerView",
       "model": "itemDetails"
     }
   ],
