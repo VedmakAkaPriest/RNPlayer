@@ -17,7 +17,8 @@ const ACTION_HANDLERS = {
     isInitialized: true
   }),
   [types.FLOW_STATE_CHANGED]: (state, action) => state.merge({
-    currentState: action.to,
+    currentState: action.nextState,
+    states: state.states.set(action.nextState.name, action.nextState),
     isProcessing: false
   }),
   [types.FLOW_TRANSITION_START]: (state, action) => state.merge({

@@ -16,23 +16,44 @@ export function init() {
 
     const models = getState().dataModel.models;
 
-    const states: Array<types.DFState> = flows.states;
-    lo.each(states, state => state.model = getState().dataModel.models[state.model]);
+    const states: Array<types.DFState> = lo.reduce(flows.states,
+      (accum, state) => {
+        accum[state.name] = { ...state,
+          model(getState) {
+            return getState().dataModel.models[state.model];
+          }
+        };
+        return accum;
+      }, {});
 
-    const transitions: Array<types.DFTransition> = flows.transitions;
-    lo.each(transitions, trans => {
-      trans.to = lo.find(states, {name: trans.to});
-      trans.from = lo.find(states, {name: trans.from});
-    });
+    const transitions: Array<types.DFTransition> = lo.reduce(flows.transitions,
+      (accum, trans) => {
+        accum[trans.name] = { ...trans,
+          to(getState) {
+            return getState().dataFlow.states[trans.to];
+          },
+          from(getState) {
+            return getState().dataFlow.states[trans.from];
+          }
+        };
+        return accum;
+      }, {});
 
     dispatch({type:types.INITIALIZED, states, transitions});
+    dispatch(resolveInitialState(flows.init));
+  };
+}
 
-    let initialTransition = lo.find(transitions, {name: flows.init});
+function resolveInitialState(customTransName) {
+  return async function(dispatch, getState) {
+    const transitions = getState().dataFlow.transitions;
+
+    let initialTransition = transitions[customTransName];
     if (!initialTransition) {
-      initialTransition = lo.find(transitions, {name: 'root'});
+      initialTransition = transitions['root'];
     }
     if (!initialTransition) {
-      initialTransition = transitions[0];
+      initialTransition = lo.values(transitions)[0];
     }
 
     dispatch(applyTransition(initialTransition));
@@ -43,16 +64,19 @@ export function handleChange(item) {
   return async function(dispatch, getState) {
     const { currentState, transitions } = getState().dataFlow;
 
-    const availTrans = lo.filter(transitions, { from: { name: currentState.name } });
+    const availTrans = lo.filter(transitions.asMutable(), trans => {
+      const state = trans.from(getState) || {};
+      return state.name == currentState.name;
+  });
     /*
      * Check conditions
     */
     const transition = availTrans[0];
 
-    dispatch({type:types.FLOW_TRANSITION_START, from: transition.from, to: transition.to});
+    dispatch({type:types.FLOW_TRANSITION_START, from: transition.from(getState), to: transition.to(getState)});
     dispatch(applyTransition(transition, item));
 
-    return [transition.to, transition.to.model];
+    return [transition.to(getState), transition.to(getState).model(getState)];
   };
 }
 
@@ -60,21 +84,25 @@ export function restoreState() {
   return async function(dispatch, getState) {
     const { currentState, transitions } = getState().dataFlow;
 
-    const availTrans = lo.filter(transitions, { to: { name: currentState.name } });
+    const availTrans = lo.filter(transitions, trans => {
+      const state = trans.to(getState) || {};
+      return state.name == currentState.name
+    });
     /*
      * Check conditions
      */
     const transition = availTrans[0];
 
-    dispatch({type:types.FLOW_STATE_CHANGED, from: transition.to, to: transition.from});
+    const fromState = transition.from(getState);
+    dispatch({type:types.FLOW_STATE_CHANGED, nextState: fromState});
 
-    return [transition.from, transition.from.model];
+    return [fromState, fromState.model(getState)];
   };
 }
 
 export function applyTransition(transition: types.DFTransition, context = {}) {
   return async function(dispatch, getState) {
-    const nextState = Immutable.isImmutable(transition.to) ? transition.to.asMutable() : transition.to;
+    const nextState = transition.to(getState).asMutable();
     const actions = Immutable.isImmutable(transition.actions) ? transition.actions.asMutable() : transition.actions;
     if (Immutable.isImmutable(context)) {
       context = context.asMutable();
@@ -87,7 +115,7 @@ export function applyTransition(transition: types.DFTransition, context = {}) {
     }
     nextState.data = context.__results;
 
-    dispatch({type:types.FLOW_STATE_CHANGED, from: transition.from, to: nextState});
+    dispatch({type:types.FLOW_STATE_CHANGED, nextState});
   };
 }
 
@@ -99,10 +127,6 @@ const TRANS_FUNC = {
       .then(r => {
         if (lo.isString(this.__arguments)) {
           const params = lo.assign(this, {__results: r});
-          try {
-            log(lo.template(this.__arguments)({__results: r}))
-          }
-          catch(e){console.error(e)}
           return lo.template(this.__arguments)(this);
         }
         return r;
@@ -111,7 +135,6 @@ const TRANS_FUNC = {
   "queryHtml": function() { return xml.queryHtml(this.__results, this.__arguments) },
   "map": function() {
     const model = lo.has(this.__models, this.__arguments) ? this.__models[this.__arguments].asMutable() : null;
-    //console.log(this, model)
     if (model && model.mapper) {
       return model.mapper.bind(this)();
     }

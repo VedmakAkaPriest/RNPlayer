@@ -31,6 +31,7 @@ class AppWrapper extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    log('appwrapper',nextProps.rootModel)
     if (nextProps.isInitialized && !this.state.navigationState) {
       const navigationState = this.getNavigationState(nextProps);
       this.setState({ navigationState, navigationBar:{title: nextProps.rootModel.title} });
@@ -52,7 +53,6 @@ class AppWrapper extends Component {
   }
 
   push = (nextScreenProps) => {
-    //console.log('push', nextScreenProps)
     // Push a new route, which in our case is an object with a key value.
     const route = {
       key: lo.uniqueId('Route-'),
@@ -64,7 +64,6 @@ class AppWrapper extends Component {
   };
 
   pop = (nextScreenProps) => {
-    console.log('pop')
     this.props.dispatch(FlowActions.restoreState());
     // Pop the current route using the pop reducer.
     this._onNavigationChange(NavigationStateUtils.pop(this.state.navigationState));
@@ -115,7 +114,6 @@ class AppWrapper extends Component {
 
   _render(transitionProps) {
     const InternalComponent = transitionProps.scene.route.component();
-    //log(transitionProps)
     return (
       <Animated.View
           style={[styles.scene, this._getAnimatedStyle(transitionProps)]}>

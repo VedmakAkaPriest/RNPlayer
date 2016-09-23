@@ -39,7 +39,7 @@ export function init() {
             return lo.get(this.__results, path)
           };
         case lo.isString(expr):
-          return function(arrayIdx) { log(arrayIdx, this.__results[6][arrayIdx*3], this.__results[6]);return lo.template(expr)({...this, idx: arrayIdx}) };
+          return function(arrayIdx) { return lo.template(expr)({...this, idx: arrayIdx}) };
         case lo.isObject(expr):
           return lo.map(expr, parseMapperStep1);
       }
@@ -68,7 +68,6 @@ export function init() {
               const rs = mapper.bind(this)();
               return rs
             });
-            log(model, mappedObj)
             return mappedObj;
         }
       };

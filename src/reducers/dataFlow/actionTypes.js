@@ -22,8 +22,8 @@ export class DFState {
 export class DFTransition {
   name: String;
 
-  from: DataFlowState;
-  to: DataFlowState;
+  from: DFState;
+  to: DFState;
 
   conditions: Array<String>;
   actions: Array<String>;
