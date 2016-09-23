@@ -6,7 +6,8 @@ const initialState:types.DataFlowState = Immutable({
   isInitialized: false,
   states: [],
   transitions: [],
-  currentState: null
+  currentState: null,
+  isProcessing: false
 });
 
 const ACTION_HANDLERS = {
@@ -15,8 +16,13 @@ const ACTION_HANDLERS = {
     transitions: action.transitions,
     isInitialized: true
   }),
-  [types.FLOW_STATE_CHANGE]: (state, action) => state.merge({
-    currentState: action.to
+  [types.FLOW_STATE_CHANGED]: (state, action) => state.merge({
+    currentState: action.nextState,
+    states: state.states.set(action.nextState.name, action.nextState),
+    isProcessing: false
+  }),
+  [types.FLOW_TRANSITION_START]: (state, action) => state.merge({
+    isProcessing: true
   })
 };
 

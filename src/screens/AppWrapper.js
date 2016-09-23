@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import NavigationBar from 'react-native-navigation-bar';
 import * as lo from 'lodash';
+import * as FlowActions from '../reducers/dataFlow/actions';
 
 
 const NavigationBarHeight = 44;
@@ -17,7 +18,10 @@ class AppWrapper extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      downloadIcon: null
+      navigationBar:{
+        title: '',
+        leftButtonIcon: null
+      },
     };
     this.state.navigationState = this.getNavigationState(props);
     Promise.all([
@@ -27,9 +31,10 @@ class AppWrapper extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    log('appwrapper',nextProps.rootModel)
     if (nextProps.isInitialized && !this.state.navigationState) {
       const navigationState = this.getNavigationState(nextProps);
-      this.setState({ navigationState });
+      this.setState({ navigationState, navigationBar:{title: nextProps.rootModel.title} });
     }
   }
 
@@ -48,7 +53,6 @@ class AppWrapper extends Component {
   }
 
   push = (nextScreenProps) => {
-    //console.log('push', nextScreenProps)
     // Push a new route, which in our case is an object with a key value.
     const route = {
       key: lo.uniqueId('Route-'),
@@ -60,7 +64,7 @@ class AppWrapper extends Component {
   };
 
   pop = (nextScreenProps) => {
-    console.log('pop', nextScreenProps)
+    this.props.dispatch(FlowActions.restoreState());
     // Pop the current route using the pop reducer.
     this._onNavigationChange(NavigationStateUtils.pop(this.state.navigationState));
   };
@@ -73,6 +77,15 @@ class AppWrapper extends Component {
       this.setState({navigationState});
     }
   }
+
+  onTransitionStart = (transitionProps) => {
+    this.setState({
+      navigationBar: {
+        title: transitionProps.scene.route.title,
+        leftButtonIcon: transitionProps.scene.index > 0 ? this.state.backIcon : null
+      }
+    });
+  };
 
   _getAnimatedStyle(transitionProps) {
     const {
@@ -101,23 +114,11 @@ class AppWrapper extends Component {
 
   _render(transitionProps) {
     const InternalComponent = transitionProps.scene.route.component();
-    //log(transitionProps)
     return (
       <Animated.View
-        style={[styles.scene, this._getAnimatedStyle(transitionProps)]}>
-        <NavigationBar
-          title={ transitionProps.scene.route.title }
-          height={ NavigationBarHeight }
-          titleColor={ '#fff' }
-          backgroundColor={ '#149be0' }
-          leftButtonIcon={ transitionProps.scene.index > 0 ? this.state.backIcon : null }
-          leftButtonTitleColor={ '#fff' }
-          onLeftButtonPress={ undefined }
-          rightButtonIcon={ this.state.downloadIcon }
-          rightButtonTitleColor={ '#fff' }
-          onRightButtonPress={ undefined } />
-        <InternalComponent navigator={ this }/>
-      </Animated.View>
+          style={[styles.scene, this._getAnimatedStyle(transitionProps)]}>
+          <InternalComponent navigator={ this }/>
+        </Animated.View>
     );
   }
 
@@ -127,8 +128,21 @@ class AppWrapper extends Component {
     }
 
     return (
-      <Transitioner navigationState={ this.state.navigationState }
-                    render={ this._render.bind(this) } />
+      <View style={{ flex: 1 }}>
+        <Transitioner navigationState={ this.state.navigationState }
+                      onTransitionStart={ this.onTransitionStart }
+                      render={ this._render.bind(this) } />
+        <NavigationBar title={ this.state.navigationBar.title }
+                       height={ NavigationBarHeight }
+                       titleColor={ '#fff' }
+                       backgroundColor={ '#149be0' }
+                       leftButtonIcon={ this.state.navigationBar.leftButtonIcon }
+                       leftButtonTitleColor={ '#fff' }
+                       onLeftButtonPress={ this.pop }
+                       rightButtonIcon={ this.state.downloadIcon }
+                       rightButtonTitleColor={ '#fff' }
+                       onRightButtonPress={ undefined } />
+      </View>
     );
   }
 }
@@ -151,7 +165,7 @@ const styles = StyleSheet.create({
     paddingTop: NavigationBarHeight,
     backgroundColor: '#E9E9EF',
     bottom: 0,
-    flex: 1,
+    flex: 2,
     left: 0,
     position: 'absolute',
     right: 0,

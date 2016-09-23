@@ -36,7 +36,6 @@ export function init() {
         case lo.isArray(expr):
           return function(arrayIdx) {
             let path = arrayIdx === undefined ? expr : lo.concat(expr,[arrayIdx]);
-            log(this.__results, path)
             return lo.get(this.__results, path)
           };
         case lo.isString(expr):
@@ -61,17 +60,14 @@ export function init() {
               lo.each(mapFields, (mapper, field) => obj[field]=mapper.bind(this)(arrayIdx));
               mapped.push(obj);
             });
-            log(model, mapped)
             return mapped;
             break;
           case types.DataModelType.OBJECT:
           default:
             const mappedObj = lo.mapValues(mappers[model.name], mapper => {
               const rs = mapper.bind(this)();
-              log('>>>', rs);
               return rs
             });
-            log(model, mappedObj)
             return mappedObj;
         }
       };

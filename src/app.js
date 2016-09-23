@@ -22,9 +22,6 @@ const store = createStoreWithMiddleware(reducer);
 import registerScreens from './routes';
 registerScreens(store, Provider);
 
-// wrapper
-import AppWrapper from './screens/AppWrapper';
-
 
 export default class App {
 
@@ -46,7 +43,7 @@ export default class App {
         }
         else if (dataFlow.currentState) { // all ok, finish
           const rootView:DFState = dataFlow.currentState;
-          const rootModel = rootView.model;
+          const rootModel = rootView.model(store.getState);
 
           store.dispatch(downloaderActions.init());
           store.dispatch(appActions.appInitialized(rootView, rootModel));

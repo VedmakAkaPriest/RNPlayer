@@ -4,7 +4,8 @@ import React, {
 import {
   StyleSheet,
   View, ListView, Image, Text,
-  TouchableHighlight
+  TouchableHighlight,
+  ActivityIndicator,
 } from 'react-native';
 import { connect } from 'react-redux';
 import * as lo from 'lodash';
@@ -36,6 +37,12 @@ class ThumbnailsListView extends Component {
   }
 
   render() {
+    if (this.props.loading) {
+      return (
+        <ActivityIndicator animating={this.props.loading} style={[styles.centering, {height: 80}]} size="large" />
+      )
+    }
+
     return (
       <ListView enableEmptySections={ true }
                 dataSource={this.props.dataSource}
@@ -48,6 +55,7 @@ const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 function mapStateToProps(state) {
   return {
     dataSource: ds.cloneWithRows(lo.get(state.dataFlow, 'currentState.data', [])),
+    loading: state.dataFlow.isProcessing,
   };
 }
 
@@ -71,4 +79,5 @@ const styles = StyleSheet.create({
   description: {
     flex: 1
   },
+  centering: { alignItems: 'center', justifyContent: 'center', padding: 8, },
 });

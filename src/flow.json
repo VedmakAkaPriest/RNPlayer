@@ -15,7 +15,7 @@
       "to": "Category",
       "actions": {
         "fetch": "http://www.ex.ua/ru/video",
-        "text": "results",
+        "text": null,
         "queryHtml": [
           "//table[@class='include_0']//a[not(@class='info')]",
           "//table[@class='include_0']//a[not(@class='info')]/@href"
@@ -29,7 +29,7 @@
       "to": "SubCategory",
       "actions": {
         "fetch": "http://www.ex.ua${link}",
-        "text": "results",
+        "text": null,
         "queryHtml": [
           "//table[@class='include_0']//td/p[1]/a[1]",
             "//table[@class='include_0']//td/a/@href",
@@ -44,15 +44,15 @@
       "to": "ItemDetails",
       "actions": {
         "fetch": "http://www.ex.ua${link}",
-        "text": "results",
+        "text": "<%= __results.replace('\<br\>','\\n') %>",
         "queryHtml": [
           ".//*[@id='body_element']/table[1]//tr/td[1]/h1",
           ".//*[@id='body_element']/table[1]//tr/td[1]/img/@src",
-          ".//*[@id='body_element']/table[1]//tr/td[1]/p[position() < last()]",
-          ".//*[@id='body_element']/table[3]//tr[position() > 1]/td/a[@title]",
-          ".//*[@id='body_element']/table[3]//tr[position() > 1]/td/a[@title]/@href",
-          ".//*[@id='body_element']/table[3]//tr[position() > 1]/td[4]/b",
-          ".//*[@id='body_element']/table[3]//tr[position() > 1]/td[4]/p[1]/text()"
+          ".//*[@id='body_element']/table[1]//div[@id='post']",
+          ".//*[@id='body_element']/table[2]//tr/td[2]/a[@title]",
+          ".//*[@id='body_element']/table[2]//tr/td[2]/a[@title]/@href",
+          ".//*[@id='body_element']/table[2]//tr[position() > 1]/td[4]/b",
+          ".//*[@id='body_element']/table[2]//tr[position() > 1]/td[4]/p[1]/text()"
         ],
         "map": "itemDetails"
       }
@@ -63,7 +63,7 @@
       "to": "ItemDetails",
       "actions": {
         "fetch": "/ru/video",
-        "text": "results",
+        "text": null,
         "queryHtml": [
           "//table[@class='include_0']//a[not(@class='info')]",
           "//table[@class='include_0']//a[not(@class='info')]/@href"
