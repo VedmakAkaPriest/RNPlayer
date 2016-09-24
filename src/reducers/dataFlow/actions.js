@@ -1,6 +1,6 @@
 import * as types from './actionTypes';
 import Immutable from 'seamless-immutable';
-const RNFS = require('react-native-fs');
+// const RNFS = require('react-native-fs');
 const xml = require('react-native').NativeModules.RNMXml;
 import * as lo from 'lodash';
 

@@ -2,13 +2,23 @@ import * as types from './actionTypes';
 import Immutable from 'seamless-immutable';
 import { find } from 'lodash';
 
-const initialState:types.DataFlowState = Immutable({
+const initialState = Immutable({
   isInitialized: false,
-  states: [],
-  transitions: [],
+  plugins: {
+    [String]: {
+      states: {},
+      transitions: {},
+      currentState: null,
+      isProcessing: false
+    }
+  },
+  states: {},
+  transitions: {},
   currentState: null,
   isProcessing: false
 });
+
+
 
 const ACTION_HANDLERS = {
   [types.INITIALIZED]: (state, action) => state.merge({

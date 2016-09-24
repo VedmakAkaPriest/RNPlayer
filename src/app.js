@@ -42,10 +42,10 @@ export default class App {
           store.dispatch(flowActions.init());
         }
         else if (dataFlow.currentState) { // all ok, finish
-          const rootView:DFState = dataFlow.currentState;
+          const rootView = dataFlow.currentState;
           const rootModel = rootView.model(store.getState);
 
-          store.dispatch(downloaderActions.init());
+          // store.dispatch(downloaderActions.init());
           store.dispatch(appActions.appInitialized(rootView, rootModel));
         }
       }

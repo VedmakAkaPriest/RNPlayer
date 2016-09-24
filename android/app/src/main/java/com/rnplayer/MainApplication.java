@@ -30,7 +30,7 @@ public class MainApplication extends Application implements ReactApplication {
           new MainReactPackage()
               , new ReactVideoPackage()
               , new VectorIconsPackage()
-              , new RNFSPackage()
+//              , new RNFSPackage()
               , new RNMXmlPackage()
       );
     }

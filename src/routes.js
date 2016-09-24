@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { AppRegistry } from 'react-native';
 
-import ProvidersView from './components/Providers/ProvidersView';
-import CategoriesView from './components/CategoriesView';
-import MediaCategoriesView from './components/MediaCategories/MediaCategoriesView';
-import MediaCategoryView from './components/MediaCategories/MediaCategoryView';
-import MediaItemView from './components/MediaItem/MediaItemView';
-import DownloadsView from './components/Downloads/DownloadsView';
-import PlayerView from './components/Player/PlayerView';
+// import ProvidersView from './components/Providers/ProvidersView';
+// import CategoriesView from './components/CategoriesView';
+// import MediaCategoriesView from './components/MediaCategories/MediaCategoriesView';
+// import MediaCategoryView from './components/MediaCategories/MediaCategoryView';
+// import MediaItemView from './components/MediaItem/MediaItemView';
+// import DownloadsView from './components/Downloads/DownloadsView';
+// import PlayerView from './components/Player/PlayerView';
 
 // New
 import AppWrapper from './screens/AppWrapper';
@@ -28,13 +28,13 @@ export default function registerScreens(store, Provider) {
   registerComponent('ThumbnailsListView', ThumbnailsListView);
   registerComponent('DetailsView', DetailsView);
 
-  registerComponent('ProvidersView', ProvidersView);
-  registerComponent('CategoriesView', CategoriesView);
-  registerComponent('MediaCategoriesView', MediaCategoriesView);
-  registerComponent('MediaCategoryView', MediaCategoryView);
-  registerComponent('MediaItemView', MediaItemView);
-  registerComponent('DownloadsView', DownloadsView);
-  registerComponent('PlayerView', PlayerView);
+  // registerComponent('ProvidersView', ProvidersView);
+  // registerComponent('CategoriesView', CategoriesView);
+  // registerComponent('MediaCategoriesView', MediaCategoriesView);
+  // registerComponent('MediaCategoryView', MediaCategoryView);
+  // registerComponent('MediaItemView', MediaItemView);
+  // registerComponent('DownloadsView', DownloadsView);
+  // registerComponent('PlayerView', PlayerView);
 
   const generatorWrapper = function() {
     return class extends Component {

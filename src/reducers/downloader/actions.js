@@ -1,6 +1,6 @@
 import * as types from './actionTypes';
 import { AsyncStorage } from 'react-native';
-const RNFS = require('react-native-fs');
+// const RNFS = require('react-native-fs');
 const NativeAppEventEmitter = require('react-native').NativeAppEventEmitter;
 
 export function init() {

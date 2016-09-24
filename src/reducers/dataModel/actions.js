@@ -1,5 +1,5 @@
 import * as types from './actionTypes';
-const RNFS = require('react-native-fs');
+// const RNFS = require('react-native-fs');
 import * as lo from 'lodash';
 
 export function init() {
