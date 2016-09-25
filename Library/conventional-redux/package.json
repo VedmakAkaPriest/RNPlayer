@@ -1,0 +1,14 @@
+{
+  "name": "conventional-redux",
+  "version": "0.2.1",
+  "description": "Redux with conventions!",
+  "files": ["index.js","connect.js","middleware.js","reducer.js"],
+  "keywords": [
+    "react",
+    "redux",
+    "convention"
+  ],
+  "author": "Michal Janeczek",
+  "license": "MIT",
+  "dependencies": {}
+}

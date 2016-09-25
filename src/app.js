@@ -1,22 +1,19 @@
 import { AppRegistry } from 'react-native';
-import { createStore, applyMiddleware, combineReducers } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
+import { conventionalReduxMiddleware, setRecreateReducerFunction, registerInteractor } from 'conventional-redux';
 import createLogger from 'redux-logger';
-
-import * as reducers from './reducers';
-import * as appActions from './reducers/app/actions';
-import * as downloaderActions from './reducers/downloader/actions';
-import * as flowActions from './reducers/dataFlow/actions';
-import * as dataActions from './reducers/dataModel/actions';
-import { DFState } from './reducers/dataFlow/actionTypes';
-import { DataModel } from './reducers/dataModel/actionTypes';
+import makeRootReducer from './reducers';
+import AppInteractor from './reducers/App';
 
 // redux related book keeping
 const logger = createLogger({collapsed: true});
-const createStoreWithMiddleware = applyMiddleware(thunk, logger)(createStore);
-const reducer = combineReducers(reducers);
-const store = createStoreWithMiddleware(reducer);
+const createStoreWithMiddleware = applyMiddleware(conventionalReduxMiddleware, thunk, logger)(createStore);
+const store = createStoreWithMiddleware(makeRootReducer());
+store.asyncReducers = {};
+setRecreateReducerFunction(() => store.replaceReducer(makeRootReducer()));
+
 
 // screen related book keeping
 import registerScreens from './routes';
@@ -27,14 +24,12 @@ export default class App {
 
   constructor(navigator = {}, downloadIcon='') {
     // since react-redux only works on components, we need to subscribe this class manually
-    store.subscribe(this.onStoreUpdate.bind(this));
-    store.dispatch(dataActions.init());
-
+    // store.subscribe(this.onStoreUpdate.bind(this));
   }
 
   onStoreUpdate() {
     const { app, dataFlow, dataModel } = store.getState();
-
+log('update', store.getState())
     if (!app.isInitialized) { // Need to init all
       if (dataModel.isInitialized) { // Models is loaded already?
 

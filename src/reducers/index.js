@@ -1,13 +1,17 @@
-import app from './app/reducer';
-import sources from './sources/reducer';
-import downloader from './downloader/reducer';
-import dataModel from './dataModel/reducer';
-import dataFlow from './dataFlow/reducer';
+import { combineReducers } from 'redux'
+import { conventionalReducers } from 'conventional-redux';
 
-export {
-  app,
-  sources,
-  downloader,
-  dataModel,
-  dataFlow,
+export const makeRootReducer = (asyncReducers) => {
+  return combineReducers({
+    ...conventionalReducers(),
+    ...asyncReducers,
+    stub: ()=>1&&{}
+  });
 };
+
+export const injectReducer = (store, { key, reducer }) => {
+  store.asyncReducers[key] = reducer;
+  store.replaceReducer(makeRootReducer(store.asyncReducers));
+};
+
+export default makeRootReducer;

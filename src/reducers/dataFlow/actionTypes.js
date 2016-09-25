@@ -53,5 +53,5 @@ export class Plugin {
 
 export class FlowStore {
   isInitialized: Boolean;
-  plugins:
+  plugins;
 }

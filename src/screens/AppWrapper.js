@@ -7,11 +7,12 @@ const {
   StateUtils: NavigationStateUtils,
   } = NavigationExperimental;
 import { connect } from 'react-redux';
+import { connectInteractors, registerInteractor } from 'conventional-redux';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import NavigationBar from 'react-native-navigation-bar';
 import * as lo from 'lodash';
-import * as FlowActions from '../reducers/dataFlow/actions';
-
+import App from '../reducers/App';
+registerInteractor('app', new App())
 
 const NavigationBarHeight = 44;
 class AppWrapper extends Component {
@@ -123,6 +124,11 @@ class AppWrapper extends Component {
   }
 
   render() {
+
+    this.props.app.isInitialized = false;
+    log(this.props.app)
+    this.app.init('q')
+
     if (!this.props.isInitialized) {
       return ( <ActivityIndicator animating={ this.props.isInitialized } style={ styles.centering } size="large" /> );
     }
@@ -154,7 +160,8 @@ function mapStateToProps(state) {
     rootModel: state.app.rootModel
   };
 }
-export default connect(mapStateToProps)(AppWrapper);
+// export default connect(mapStateToProps)(AppWrapper);
+export default connectInteractors(AppWrapper, ['app', 'app2']);
 
 const styles = StyleSheet.create({
   centering: { alignItems: 'center', justifyContent: 'center', padding: 8, height: 80 },
