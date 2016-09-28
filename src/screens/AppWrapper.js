@@ -11,8 +11,7 @@ import { connectInteractors, registerInteractor } from 'conventional-redux';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import NavigationBar from 'react-native-navigation-bar';
 import * as lo from 'lodash';
-import App from '../reducers/App';
-registerInteractor('app', new App())
+import AppInteractor from '../reducers/AppInteractor';
 
 const NavigationBarHeight = 44;
 class AppWrapper extends Component {
@@ -31,8 +30,13 @@ class AppWrapper extends Component {
         ]).then(icons => this.setState({ downloadIcon: icons[0], backIcon: icons[1] }));
   }
 
+  componentDidMount() {
+    this.app.init('x');
+
+  }
+
   componentWillReceiveProps(nextProps) {
-    log('appwrapper',nextProps.rootModel)
+    log('appwrapper',nextProps);
     if (nextProps.isInitialized && !this.state.navigationState) {
       const navigationState = this.getNavigationState(nextProps);
       this.setState({ navigationState, navigationBar:{title: nextProps.rootModel.title} });
@@ -124,10 +128,7 @@ class AppWrapper extends Component {
   }
 
   render() {
-
-    this.props.app.isInitialized = false;
-    log(this.props.app)
-    this.app.init('q')
+    log(this.p('app.isInitialized'));
 
     if (!this.props.isInitialized) {
       return ( <ActivityIndicator animating={ this.props.isInitialized } style={ styles.centering } size="large" /> );
@@ -153,15 +154,16 @@ class AppWrapper extends Component {
   }
 }
 
-function mapStateToProps(state) {
-  return {
-    isInitialized: state.app.isInitialized,
-    rootView: state.app.rootView,
-    rootModel: state.app.rootModel
-  };
-}
+//function mapStateToProps(state) {
+//  return {
+//    isInitialized: state.app.isInitialized,
+//    rootView: state.app.rootView,
+//    rootModel: state.app.rootModel
+//  };
+//}
 // export default connect(mapStateToProps)(AppWrapper);
-export default connectInteractors(AppWrapper, ['app', 'app2']);
+//registerInteractor('app', new AppInteractor())
+export default connectInteractors(AppWrapper, ['app']);
 
 const styles = StyleSheet.create({
   centering: { alignItems: 'center', justifyContent: 'center', padding: 8, height: 80 },

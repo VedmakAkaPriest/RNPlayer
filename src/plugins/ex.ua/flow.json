@@ -1,0 +1,98 @@
+{
+  "transitions": [
+    {
+      "name": "root",
+      "to": "Source",
+      "actions": {
+        "static": [{
+          "title": "ex.ua"
+        }]
+      }
+    },
+    {
+      "name": "categories",
+      "from": "Source",
+      "to": "Category",
+      "actions": {
+        "fetch": "http://www.ex.ua/ru/video",
+        "text": null,
+        "queryHtml": [
+          "//table[@class='include_0']//a[not(@class='info')]",
+          "//table[@class='include_0']//a[not(@class='info')]/@href"
+        ],
+        "map": "categories"
+      }
+    },
+    {
+      "name": "subcategories",
+      "from": "Category",
+      "to": "SubCategory",
+      "actions": {
+        "fetch": "http://www.ex.ua${link}",
+        "text": null,
+        "queryHtml": [
+          "//table[@class='include_0']//td/p[1]/a[1]",
+            "//table[@class='include_0']//td/a/@href",
+            "//table[@class='include_0']//td/a/img/@src"
+        ],
+        "map": "subCategories"
+      }
+    },
+    {
+      "name": "details",
+      "from": "SubCategory",
+      "to": "ItemDetails",
+      "actions": {
+        "fetch": "http://www.ex.ua${link}",
+        "text": "<%= __results.replace('\<br\>','\\n') %>",
+        "queryHtml": [
+          ".//*[@id='body_element']/table[1]//tr/td[1]/h1",
+          ".//*[@id='body_element']/table[1]//tr/td[1]/img/@src",
+          ".//*[@id='body_element']/table[1]//div[@id='post']",
+          ".//*[@id='body_element']/table[2]//tr/td[2]/a[@title]",
+          ".//*[@id='body_element']/table[2]//tr/td[2]/a[@title]/@href",
+          ".//*[@id='body_element']/table[2]//tr[position() > 1]/td[4]/b",
+          ".//*[@id='body_element']/table[2]//tr[position() > 1]/td[4]/p[1]/text()"
+        ],
+        "map": "itemDetails"
+      }
+    },
+    {
+      "name": "play",
+      "from": "ItemDetails",
+      "to": "ItemDetails",
+      "actions": {
+        "fetch": "/ru/video",
+        "text": null,
+        "queryHtml": [
+          "//table[@class='include_0']//a[not(@class='info')]",
+          "//table[@class='include_0']//a[not(@class='info')]/@href"
+        ],
+        "map": ["title", "link"]
+      }
+    }
+  ],
+  "states": [
+    {
+      "name": "Source",
+      "screen": "SimpleListView",
+      "model": "sources"
+    },
+    {
+      "name": "Category",
+      "screen": "SimpleListView",
+      "model": "categories"
+    },
+    {
+      "name": "SubCategory",
+      "screen": "ThumbnailsListView",
+      "model": "subCategories"
+    },
+    {
+      "name": "ItemDetails",
+      "screen": "DetailsView",
+      "model": "itemDetails"
+    }
+  ],
+  "init": "root"
+}

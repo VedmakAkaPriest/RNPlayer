@@ -12,6 +12,7 @@ import com.facebook.react.shell.MainReactPackage;
 import java.util.Arrays;
 import java.util.List;
 
+import com.RNFetchBlob.RNFetchBlobPackage;
 import com.brentvatne.react.ReactVideoPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.rnmxml.RNMXmlPackage;
@@ -27,17 +28,17 @@ public class MainApplication extends Application implements ReactApplication {
     @Override
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
-          new MainReactPackage()
-              , new ReactVideoPackage()
-              , new VectorIconsPackage()
-//              , new RNFSPackage()
-              , new RNMXmlPackage()
+        new MainReactPackage()
+        , new RNFetchBlobPackage()
+        , new ReactVideoPackage()
+        , new VectorIconsPackage()
+        , new RNMXmlPackage()
       );
     }
   };
 
   @Override
   public ReactNativeHost getReactNativeHost() {
-      return mReactNativeHost;
+    return mReactNativeHost;
   }
 }

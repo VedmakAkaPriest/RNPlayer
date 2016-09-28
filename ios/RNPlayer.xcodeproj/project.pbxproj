@@ -34,6 +34,7 @@
 		D7EC030F2C1C4BC4A123349E /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0190A48187824C63A096A339 /* Foundation.ttf */; };
 		DC633F367DEA4CA59B48A45C /* libRCTVideo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 893AE7DA2A4145D884BF712D /* libRCTVideo.a */; };
 		F3D98CF6A8394D518587FA07 /* libRNMXml.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0777D63C0D1947CFA23825B0 /* libRNMXml.a */; };
+		0D76AF92F4B24FEE81DCBEC5 /* libRNFetchBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F858885D97574B758E4A93BD /* libRNFetchBlob.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -181,6 +182,8 @@
 		CD71B8EB92C9499CB8EF4F5F /* RCTVideo.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTVideo.xcodeproj; path = "../node_modules/react-native-video/RCTVideo.xcodeproj"; sourceTree = "<group>"; };
 		CF7436FBD4024839A581CAAB /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
 		DC38E0CF33AE45A999A9874A /* libRNVectorIcons.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNVectorIcons.a; sourceTree = "<group>"; };
+		3D5E6C2706104979B844B73A /* RNFetchBlob.xcodeproj */ = {isa = PBXFileReference; name = "RNFetchBlob.xcodeproj"; path = "../node_modules/react-native-fetch-blob/ios/RNFetchBlob.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		F858885D97574B758E4A93BD /* libRNFetchBlob.a */ = {isa = PBXFileReference; name = "libRNFetchBlob.a"; path = "libRNFetchBlob.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -210,6 +213,7 @@
 				3DE4071F8DF64FDCA91A7D6B /* libRNVectorIcons.a in Frameworks */,
 				DC633F367DEA4CA59B48A45C /* libRCTVideo.a in Frameworks */,
 				F3D98CF6A8394D518587FA07 /* libRNMXml.a in Frameworks */,
+				0D76AF92F4B24FEE81DCBEC5 /* libRNFetchBlob.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -336,6 +340,7 @@
 				A846C63E1E4C4E0FBE5957D4 /* RNVectorIcons.xcodeproj */,
 				CD71B8EB92C9499CB8EF4F5F /* RCTVideo.xcodeproj */,
 				B3C66EC09E6241A7A48973BD /* RNMXml.xcodeproj */,
+				3D5E6C2706104979B844B73A /* RNFetchBlob.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -747,6 +752,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RNPlayer.app/RNPlayer";
@@ -763,6 +769,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RNPlayer.app/RNPlayer";
@@ -781,6 +788,7 @@
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
 					"$(SRCROOT)/../node_modules/react-native-video",
 					"$(SRCROOT)/../node_modules/react-native-rnmxml/ios/RNMXml",
+					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
 				);
 				INFOPLIST_FILE = RNPlayer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -804,6 +812,7 @@
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
 					"$(SRCROOT)/../node_modules/react-native-video",
 					"$(SRCROOT)/../node_modules/react-native-rnmxml/ios/RNMXml",
+					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
 				);
 				INFOPLIST_FILE = RNPlayer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -858,6 +867,7 @@
 					"$(SRCROOT)/../node_modules/react-native-video/**",
 					"$(SRCROOT)/../node_modules/react-native-rnmxml/ios/RNMXml/**",
 					"$(SRCROOT)/../node_modules/react-native-controllers/**",
+					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -903,6 +913,7 @@
 					"$(SRCROOT)/../node_modules/react-native-video/**",
 					"$(SRCROOT)/../node_modules/react-native-rnmxml/ios/RNMXml/**",
 					"$(SRCROOT)/../node_modules/react-native-controllers/**",
+					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				MTL_ENABLE_DEBUG_INFO = NO;

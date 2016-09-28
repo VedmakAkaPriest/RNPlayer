@@ -5,14 +5,16 @@ import thunk from 'redux-thunk';
 import { conventionalReduxMiddleware, setRecreateReducerFunction, registerInteractor } from 'conventional-redux';
 import createLogger from 'redux-logger';
 import makeRootReducer from './reducers';
-import AppInteractor from './reducers/App';
+import AppInteractor from './reducers/AppInteractor';
 
 // redux related book keeping
+setRecreateReducerFunction(() => store.replaceReducer(makeRootReducer()));
+registerInteractor('app', new AppInteractor());
+
 const logger = createLogger({collapsed: true});
 const createStoreWithMiddleware = applyMiddleware(conventionalReduxMiddleware, thunk, logger)(createStore);
 const store = createStoreWithMiddleware(makeRootReducer());
 store.asyncReducers = {};
-setRecreateReducerFunction(() => store.replaceReducer(makeRootReducer()));
 
 
 // screen related book keeping
@@ -25,11 +27,12 @@ export default class App {
   constructor(navigator = {}, downloadIcon='') {
     // since react-redux only works on components, we need to subscribe this class manually
     // store.subscribe(this.onStoreUpdate.bind(this));
+    //log(store.dispatch(["app:onInit"]));
   }
 
   onStoreUpdate() {
     const { app, dataFlow, dataModel } = store.getState();
-log('update', store.getState())
+
     if (!app.isInitialized) { // Need to init all
       if (dataModel.isInitialized) { // Models is loaded already?
 
