@@ -2,14 +2,14 @@ import { AppRegistry } from 'react-native';
 import { createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import { conventionalReduxMiddleware, setRecreateReducerFunction, registerInteractor } from 'conventional-redux';
+import { conventionalReduxMiddleware, setRecreateReducerFunction, registerInteractors } from 'conventional-redux';
 import createLogger from 'redux-logger';
 import makeRootReducer from './reducers';
 import AppInteractor from './reducers/AppInteractor';
 
 // redux related book keeping
 setRecreateReducerFunction(() => store.replaceReducer(makeRootReducer()));
-registerInteractor('app', new AppInteractor());
+registerInteractors({'app': new AppInteractor(registerInteractors)});
 
 const logger = createLogger({collapsed: true});
 const createStoreWithMiddleware = applyMiddleware(conventionalReduxMiddleware, thunk, logger)(createStore);

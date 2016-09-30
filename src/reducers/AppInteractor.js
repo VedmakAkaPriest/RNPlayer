@@ -1,11 +1,18 @@
 import Immutable from 'seamless-immutable';
+import lo from 'lodash';
 import RNFetch from 'react-native-fetch-blob';
 const FS = RNFetch.fs;
+
+import DataFlow from './DataFlow';
 
 export default class AppInteractor {
   state = new Immutable({
     isInitialized: true
   });
+
+  constructor(registerInteractors) {
+    this.registerInteractors = registerInteractors;
+  }
 
   // action, called first
   onInit(...args) {
@@ -13,17 +20,34 @@ export default class AppInteractor {
   }
 
   // async action, called after 'on...'
-  init = async (...args) => {
-    log('IN', require('./../plugins/ex.ua/*.json'));
+  async init(...args) {
+    const plugins = {};
 
-    const plugins = FS.ls('/data/data/com.rnplayer/lib-main').then(r => log(r)).catch(e=>log(e));
+    // load default plugins
+    const exuaModels = require('./../plugins/ex.ua/models.json');
+    const exuaFlow = require('./../plugins/ex.ua/flow.json');
+    plugins['ex.ua'] = {
+      'models': require('./../plugins/ex.ua/models.json'),
+      'flow': require('./../plugins/ex.ua/flow.json'),
+      'dynamic': false
+    };
 
-    return [FS.dirs];
+    //const plugins = FS.ls(FS.dirs.ApplicationDir+ '/').then(r => log(r)).catch(e=>log(e));
+
+
+    return plugins;
   };
 
   // first cb
-  onInitSuccess(rs) {
-    log('onInitSuccess',rs)
+  onInitSuccess(plugins) {
+    const staticInteractors = lo(plugins).pickBy({dynamic: false}).reduce((accum, desc, name) => {
+      accum[name+'Plugin'] = DataFlow.buildFromJson(desc.models, desc.flow);
+      return accum;
+    }, {});//
+
+    log('staticInteractors', staticInteractors);
+    this.registerInteractors(staticInteractors);
+
     return this.state;
   }
 

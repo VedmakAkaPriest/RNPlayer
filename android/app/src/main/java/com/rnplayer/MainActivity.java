@@ -1,6 +1,7 @@
 package com.rnplayer;
 
 import com.facebook.react.ReactActivity;
+import com.facebook.react.cxxbridge.JSBundleLoader;
 
 public class MainActivity extends ReactActivity {
 
