@@ -6,12 +6,11 @@ const {
   Transitioner: Transitioner,
   StateUtils: NavigationStateUtils,
   } = NavigationExperimental;
-import { connect } from 'react-redux';
-import { connectInteractors, registerInteractor } from 'conventional-redux';
+import { connectInteractors, connectAllInteractors, registerInteractor } from 'conventional-redux';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import NavigationBar from 'react-native-navigation-bar';
 import * as lo from 'lodash';
-import AppInteractor from '../reducers/AppInteractor';
+
 
 const NavigationBarHeight = 44;
 class AppWrapper extends Component {
@@ -32,26 +31,28 @@ class AppWrapper extends Component {
 
   componentDidMount() {
     this.app.init('x');
+  }
 
+  shouldComponentUpdate() {
+    return true;
   }
 
   componentWillReceiveProps(nextProps) {
-    log('appwrapper',nextProps);
-    if (nextProps.isInitialized && !this.state.navigationState) {
+    if (nextProps.app.isInitialized && !this.state.navigationState) {
       const navigationState = this.getNavigationState(nextProps);
-      this.setState({ navigationState, navigationBar:{title: nextProps.rootModel.title} });
+      this.setState({ navigationState, navigationBar:{title: navigationState.routes[navigationState.index].title} });
     }
   }
 
   getNavigationState(nextProps) {
-    if (nextProps.isInitialized && !this.state.navigationState) {
+    if (nextProps.app.isInitialized && !this.state.navigationState) {
       return {
         index: 0, // Starts with first route focused.
         routes: [{
           key: lo.uniqueId('Route-'),
-          screen: nextProps.rootView.screen,
-          title: nextProps.rootModel.title,
-          component: nextProps.componentBuilder[nextProps.rootView.screen]
+          screen: 'SimpleListView',
+          title: 'Plugins',
+          component: nextProps.componentBuilder('SimpleListView')
         }]
       };
     }
@@ -62,14 +63,14 @@ class AppWrapper extends Component {
     const route = {
       key: lo.uniqueId('Route-'),
       ...nextScreenProps,
-      component: this.props.componentBuilder[nextScreenProps.screen]
+      component: this.props.componentBuilder(nextScreenProps.screen)
     };
     // Use the push reducer provided by NavigationStateUtils
     this._onNavigationChange(NavigationStateUtils.push(this.state.navigationState, route));
   };
 
   pop = (nextScreenProps) => {
-    this.props.dispatch(FlowActions.restoreState());
+    this.props.dispatch(`${this.p('plugins.activePlugin')}:restoreState`);
     // Pop the current route using the pop reducer.
     this._onNavigationChange(NavigationStateUtils.pop(this.state.navigationState));
   };
@@ -118,7 +119,7 @@ class AppWrapper extends Component {
   }
 
   _render(transitionProps) {
-    const InternalComponent = transitionProps.scene.route.component();
+    const InternalComponent = transitionProps.scene.route.component;
     return (
       <Animated.View
           style={[styles.scene, this._getAnimatedStyle(transitionProps)]}>
@@ -128,9 +129,7 @@ class AppWrapper extends Component {
   }
 
   render() {
-    log(this.p('app.isInitialized'));
-
-    if (!this.props.isInitialized) {
+    if (!this.p('app.isInitialized')) {
       return ( <ActivityIndicator animating={ this.props.isInitialized } style={ styles.centering } size="large" /> );
     }
 
@@ -154,16 +153,7 @@ class AppWrapper extends Component {
   }
 }
 
-//function mapStateToProps(state) {
-//  return {
-//    isInitialized: state.app.isInitialized,
-//    rootView: state.app.rootView,
-//    rootModel: state.app.rootModel
-//  };
-//}
-// export default connect(mapStateToProps)(AppWrapper);
-//registerInteractor('app', new AppInteractor())
-export default connectInteractors(AppWrapper, ['app']);
+export default connectInteractors(AppWrapper, ['app', 'plugins']);
 
 const styles = StyleSheet.create({
   centering: { alignItems: 'center', justifyContent: 'center', padding: 8, height: 80 },

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { AppRegistry } from 'react-native';
+import { connectAllInteractors } from 'conventional-redux';
 
 // import ProvidersView from './components/Providers/ProvidersView';
 // import CategoriesView from './components/CategoriesView';
@@ -21,7 +22,8 @@ export default function registerScreens(store, Provider) {
   const componentBuilder = {};
 
   function registerComponent(name, InternalComponent) {
-    componentBuilder[name] = () => InternalComponent;
+    componentBuilder[name] = InternalComponent;
+    //Object.assign(componentBuilder, { get [name]() { return  connectAllInteractors(InternalComponent); }})
   }
 
   registerComponent('SimpleListView', SimpleListView);
@@ -55,7 +57,7 @@ export default function registerScreens(store, Provider) {
       render() {
         return (
           <Provider store={store}>
-            <AppWrapper componentBuilder={ componentBuilder } {...this.props} />
+            <AppWrapper componentBuilder={ name =>  log('connect') || connectAllInteractors(componentBuilder[name]) } {...this.props} />
           </Provider>
         );
       }

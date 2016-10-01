@@ -1,15 +1,6 @@
 {
   "transitions": [
     {
-      "name": "root",
-      "to": "Source",
-      "actions": {
-        "static": [{
-          "title": "ex.ua"
-        }]
-      }
-    },
-    {
       "name": "categories",
       "from": "Source",
       "to": "Category",
@@ -58,26 +49,15 @@
       }
     },
     {
-      "name": "play",
+      "name": "download",
       "from": "ItemDetails",
       "to": "ItemDetails",
       "actions": {
-        "fetch": "/ru/video",
-        "text": null,
-        "queryHtml": [
-          "//table[@class='include_0']//a[not(@class='info')]",
-          "//table[@class='include_0']//a[not(@class='info')]/@href"
-        ],
-        "map": ["title", "link"]
+        "mock": "<%console.log(title)%>"
       }
     }
   ],
   "states": [
-    {
-      "name": "Source",
-      "screen": "SimpleListView",
-      "model": "sources"
-    },
     {
       "name": "Category",
       "screen": "SimpleListView",
@@ -94,5 +74,5 @@
       "model": "itemDetails"
     }
   ],
-  "init": "root"
+  "init": "categories"
 }

@@ -3,26 +3,13 @@ import React, {
 } from 'react';
 import {
   StyleSheet,
-  View, ListView, Image, Text,
+  View, Text,
   TouchableHighlight,
-  ActivityIndicator,
 } from 'react-native';
-import { connect } from 'react-redux';
-import * as lo from 'lodash';
-import * as FlowActions from '../reducers/dataFlow/actions';
+import BaseListView from '../components/BaseListView';
 
 
-class SimpleListView extends Component {
-
-  handleItem(listItem) {
-    const beforeTransition = ([nextState, nextModel]) => {
-      this.props.navigator.push({
-        screen: nextState.screen,
-        title: nextModel.title
-      })
-    };
-    this.props.dispatch(FlowActions.handleChange(listItem)).then(beforeTransition);
-  }
+class SimpleListView extends BaseListView {
 
   renderListItem(listItem) {
     return (
@@ -34,31 +21,9 @@ class SimpleListView extends Component {
       </TouchableHighlight>
     );
   }
-
-  render() {
-    if (this.props.loading) {
-      return (
-        <ActivityIndicator animating={this.props.loading} style={[styles.centering, {height: 80}]} size="large" />
-      )
-    }
-
-    return (
-      <ListView enableEmptySections={ true }
-                dataSource={ this.props.dataSource }
-                renderRow={ this.renderListItem.bind(this) } />
-    )
-  }
 }
 
-const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-function mapStateToProps(state) {
-  return {
-    dataSource: ds.cloneWithRows(lo.get(state.dataFlow, 'currentState.data', [])),
-    loading: state.dataFlow.isProcessing,
-  };
-}
-
-export default connect(mapStateToProps)(SimpleListView);
+export default SimpleListView;
 
 const styles = StyleSheet.create({
   row: {

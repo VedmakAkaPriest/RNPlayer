@@ -1,4 +1,6 @@
 import lo from 'lodash';
+import Immutable from 'seamless-immutable';
+import PROCESSORS from './MapperProcessors';
 
 export default class DataFlow {
   state = {
@@ -8,10 +10,15 @@ export default class DataFlow {
     currentState: null,
     isProcessing: false
   };
+  pluginName;
+  transitions = {};
+  models = {};
+  initialTransition;
 
-  static buildFromJson(modelsJson, flowJson) {
+  static buildFromJson(pluginName, modelsJson, flowJson) {
     const flow = new DataFlow();
 
+    flow.pluginName = pluginName;
     flow.__buildModelsFromJson(modelsJson);
     flow.__buildFlowFromJson(flowJson);
 
@@ -35,41 +42,48 @@ export default class DataFlow {
       switch (true) {
         case lo.has(mappers, expr):
           //step2Done = false;
-          return function(args) {
+          return function (args) {
             return typedMappers[expr].bind(this)(args);
           }; // will be processing on step 2
         case lo.isNumber(expr):
           expr = [expr]; // wrap into array...
         case lo.isArray(expr):
-          return function(arrayIdx) {
-            let path = arrayIdx === undefined ? expr : lo.concat(expr,[arrayIdx]);
+          return function (arrayIdx) {
+            let path = arrayIdx === undefined ? expr : lo.concat(expr, [arrayIdx]);
             return lo.get(this.__results, path)
           };
         case lo.isString(expr):
-          return function(arrayIdx) { return lo.template(expr)({...this, idx: arrayIdx}) };
+          return function (arrayIdx) {
+            return lo.template(expr)({...this, idx: arrayIdx})
+          };
         case lo.isObject(expr):
           return lo.map(expr, parseMapperStep1);
       }
     }
+
     mappers = lo.mapValues(mappers, (mapper, modelName) => lo.mapValues(mapper, parseMapperStep1));
 
     lo.each(mappers, (mapper, modelName) => {
-      typedMappers[modelName] = function() {
+      typedMappers[modelName] = function () {
         const model = models[modelName];
         switch (model.dataType) {
-          case types.DataModelType.ARRAY:
+          case DataModelType.ARRAY:
+            if (lo.isEmpty(this.__results)) {
+              log(this.__results)
+              return [];
+            }
             const mapFields = mappers[model.name];
             const focusedResults = lo.take(this.__results, lo.size(mapFields));
             const maxLen = lo.maxBy(focusedResults, 'length').length;
             const mapped = [];
             lo.times(maxLen, arrayIdx => {
               const obj = {};
-              lo.each(mapFields, (mapper, field) => obj[field]=mapper.bind(this)(arrayIdx));
+              lo.each(mapFields, (mapper, field) => obj[field] = mapper.bind(this)(arrayIdx));
               mapped.push(obj);
             });
             return mapped;
             break;
-          case types.DataModelType.OBJECT:
+          case DataModelType.OBJECT:
           default:
             const mappedObj = lo.mapValues(mappers[model.name], mapper => {
               const rs = mapper.bind(this)();
@@ -94,36 +108,126 @@ export default class DataFlow {
       }
     });
 
-    this.state.models = models;
+    this.models = models;
   }
 
   __buildFlowFromJson(flowJson) {
     this.state.states = lo.reduce(flowJson.states,
       (accum, state) => {
-        accum[state.name] = { ...state,
-          model(models) {
+        accum[state.name] = {
+          ...state,
+          model:() => {
             return this.models[state.model];
           }
         };
         return accum;
       }, {});
 
-    this.state.transitions = lo.reduce(flowJson.transitions,
+    this.transitions = lo.reduce(flowJson.transitions,
       (accum, trans) => {
-        accum[trans.name] = { ...trans,
-          to() {
+        accum[trans.name] = {
+          ...trans,
+          to:() => {
             return this.state.states[trans.to];
           },
-          from() {
+          from:() => {
             return this.state.states[trans.from];
           }
         };
         return accum;
       }, {});
 
+    let initialTransition = this.transitions[flowJson.init];
+    if (!initialTransition) {
+      initialTransition = this.transitions['root'];
+    }
+    if (!initialTransition) {
+      initialTransition = lo.values(this.transitions)[0];
+    }
+    this.initialTransition = initialTransition;
+    this.initialTransition.from = ()=>'plugins';
+
     this.state.isInitialized = true;
   }
 
+  onInit() {
+    return this.state.set('isProcessing', true);
+  }
+
+  init() {
+    this.dispatch([`${this.pluginName}:applyTransition`, this.initialTransition]);
+  }
+
+  onHandleChange(item, cb) {
+    return this.state.merge({ isProcessing: true });
+  }
+
+  handleChange(item, cb) {
+    const currentState = this.state.currentState;
+
+    const availTrans = lo.filter(this.transitions, trans => (trans.from() || {}).name == currentState.name);
+    /*
+     * Check conditions
+     */
+    const transition = availTrans[0];
+
+    this.dispatch([`${this.pluginName}:applyTransition`, transition, item]);
+
+    cb([transition.to(), transition.to().model()]);
+  }
+
+  onRestoreState() {
+    const currentState = this.state.currentState || {};
+log('currentState', currentState)
+    const availTrans = lo.filter(this.transitions, trans => (trans.to() || {}).name == currentState.name);
+    /*
+     * Check conditions
+     */
+    const transition = availTrans[0];
+
+    const fromState = transition.from();
+
+    if (lo.isString(fromState)) {
+      setTimeout(_=>this.dispatch(`${fromState}:restoreState`), 1);
+      return this.state;
+    }
+
+    return this.onApplyTransitionSuccess(fromState);
+  }
+
+  async applyTransition(transition:Transition, context = {}) {
+    const nextState = transition.to();
+    const actions = transition.actions;
+    if (Immutable.isImmutable(context)) {
+      context = context.asMutable();
+    }
+
+    context.__models = this.models;
+    for (let actFunc in actions) {
+      context.__arguments = actions[actFunc];
+      context.__results = await PROCESSORS[actFunc].bind(context)();
+    }
+
+    return nextState.set('data', context.__results);
+  }
+
+  onApplyTransition() {
+    return this.state.merge({isProcessing: true});
+  }
+
+  onApplyTransitionSuccess(nextState) {
+    return this.state.merge({
+      states: this.state.states.set(nextState.name, nextState),
+      currentState: nextState,
+      isProcessing: false
+    });
+  }
+
+  onApplyTransitionError(error) {
+    console.log('>>>> ERROR : ', error);
+    throw error;
+    return this.state.merge({isProcessing: false});
+  }
 }
 
 
@@ -140,3 +244,9 @@ class Transition {
 class State {
 
 }
+
+const DataModelType = {
+  ARRAY: 0,
+  OBJECT: 1,
+  CUSTOM: 999
+};

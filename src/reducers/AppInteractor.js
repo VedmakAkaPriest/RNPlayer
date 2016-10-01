@@ -1,18 +1,16 @@
-import Immutable from 'seamless-immutable';
 import lo from 'lodash';
+import { registerInteractors, recreateReducerFunction } from 'conventional-redux';
+import Immutable from 'seamless-immutable';
 import RNFetch from 'react-native-fetch-blob';
 const FS = RNFetch.fs;
 
 import DataFlow from './DataFlow';
 
 export default class AppInteractor {
-  state = new Immutable({
-    isInitialized: true
-  });
-
-  constructor(registerInteractors) {
-    this.registerInteractors = registerInteractors;
-  }
+  state = {
+    isInitialized: false,
+    rootView: 'SimpleListView'
+  };
 
   // action, called first
   onInit(...args) {
@@ -24,12 +22,10 @@ export default class AppInteractor {
     const plugins = {};
 
     // load default plugins
-    const exuaModels = require('./../plugins/ex.ua/models.json');
-    const exuaFlow = require('./../plugins/ex.ua/flow.json');
-    plugins['ex.ua'] = {
+    plugins['ex_ua'] = {
       'models': require('./../plugins/ex.ua/models.json'),
       'flow': require('./../plugins/ex.ua/flow.json'),
-      'dynamic': false
+      'dynamic': true
     };
 
     //const plugins = FS.ls(FS.dirs.ApplicationDir+ '/').then(r => log(r)).catch(e=>log(e));
@@ -39,21 +35,25 @@ export default class AppInteractor {
   };
 
   // first cb
-  onInitSuccess(plugins) {
-    const staticInteractors = lo(plugins).pickBy({dynamic: false}).reduce((accum, desc, name) => {
-      accum[name+'Plugin'] = DataFlow.buildFromJson(desc.models, desc.flow);
-      return accum;
-    }, {});//
-
-    log('staticInteractors', staticInteractors);
-    this.registerInteractors(staticInteractors);
-
-    return this.state;
+  onInitSuccess(pluginsJsonDescription) {
+    return this.state.merge({ isInitialized: true });
   }
 
   // next called
-  initSuccess(rs) {
-    log('initSuccess',rs)
+  initSuccess(pluginsJsonDescription) {
+    const staticInteractors = lo(pluginsJsonDescription).pickBy({dynamic: false}).reduce((accum, desc, name) => {
+      const pluginName = name+'Plugin';
+      accum[pluginName] = DataFlow.buildFromJson(pluginName, desc.models, desc.flow);
+      return accum;
+    }, {});
+
+    const dynInteractors = lo(pluginsJsonDescription).pickBy({dynamic: true}).reduce((accum, desc, name) => {
+      const pluginName = name+'Plugin';
+      accum[pluginName] = DataFlow.buildFromJson(pluginName, desc.models, desc.flow);
+      return accum;
+    }, {});
+
+    this.dispatch(['plugins:register', staticInteractors, dynInteractors]);
   }
 
   onInitError(e) {

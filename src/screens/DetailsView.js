@@ -3,25 +3,23 @@ import React, {
 } from 'react';
 import {
   StyleSheet,
-  View, ListView, ScrollView, Image, Text,
+  View, ScrollView, Image, Text,
   TouchableHighlight,
-  ActivityIndicator,
 } from 'react-native';
-import { connect } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as lo from 'lodash';
-import * as FlowActions from '../reducers/dataFlow/actions';
+import BaseView from '../components/BaseView';
 
 
-class DetailsView extends Component {
+class DetailsView extends BaseView {
 
   renderTitle() {
-    if (this.props.dataSource && this.props.dataSource.title) {
+    if (this.dataSource.title) {
       return (
         <View style={ [styles.cardStyle] }>
-          <Image source={{uri : this.props.dataSource.poster}} style={styles.cardImageStyle}/>
-          <Text style={ styles.cardContentStyle }>{ this.props.dataSource.title }</Text>
-          <Text style={ styles.cardContentStyle } key={'item-details-0'}>{ this.props.dataSource.details.trim() }</Text>
+          <Image source={{uri : this.dataSource.poster}} style={styles.cardImageStyle}/>
+          <Text style={ styles.cardContentStyle }>{ this.dataSource.title }</Text>
+          <Text style={ styles.cardContentStyle } key={'item-details-0'}>{ this.dataSource.details.trim() }</Text>
         </View>
       );
     }
@@ -35,21 +33,11 @@ class DetailsView extends Component {
     );
   }
 
-  handleLink(listItem) {
-    const beforeTransition = ([nextState, nextModel]) => {
-      this.props.navigator.push({
-        screen: nextState.screen,
-        title: nextModel.title
-      })
-    };
-    this.props.dispatch(FlowActions.handleChange(listItem)).then(beforeTransition);
-  }
-
   renderLink(item, idx) {
     const alreadyExists = false;
     return (
       <TouchableHighlight key={'item-link-' + idx}
-                          onPress={ this.handleLink.bind(this, item) }
+                          onPress={ this.handleItem.bind(this, item) }
                           activeOpacity={ 100 }
                           underlayColor="#ea4b54">
         <View style={styles.row}>
@@ -68,37 +56,19 @@ class DetailsView extends Component {
     );
   }
 
-  render() {
-    if (this.props.loading) {
-      return (
-        <ActivityIndicator animating={this.props.loading} style={[styles.centering, {height: 80}]} size="large" />
-      )
-    }
-
+  renderChildren() {
     return (
       <ScrollView>
         { this.renderTitle() }
-        { lo.map(this.props.dataSource.downloads, this.renderLink.bind(this)) }
+        { lo.map(this.dataSource.downloads, this.renderLink.bind(this)) }
       </ScrollView>
     )
   }
 }
 
-function mapStateToProps(state) {
-  return {
-    dataSource: lo.get(state.dataFlow, 'currentState.data', {}),
-    loading: state.dataFlow.isProcessing,
-  };
-}
-
-export default connect(mapStateToProps)(DetailsView);
+export default DetailsView;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'stretch',
-  },
   row: {
     flexDirection: 'row',
     padding: 10,
@@ -115,7 +85,6 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     color: 'grey'
   },
-  centering: { alignItems: 'center', justifyContent: 'center', padding: 8, },
   cardStyle: {
     flex: 1,
     backgroundColor: '#ffffff',
