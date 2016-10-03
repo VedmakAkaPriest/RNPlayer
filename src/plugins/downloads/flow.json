@@ -1,0 +1,29 @@
+{
+  "transitions": [
+    {
+      "name": "showDownloads",
+      "to": "DownloadsList",
+      "actions": {
+        "fs.createIfNotExists": "${__dirs.DocumentDir}/downloads",
+        "fs.list": "${__dirs.DocumentDir}/downloads",
+        "map": "file"
+      }
+    },
+    {
+      "name": "openFile",
+      "from": "DownloadsList",
+      "to": "DownloadsList",
+      "actions": {
+        "fs.open": "${link}"
+      }
+    }
+  ],
+  "states": [
+    {
+      "name": "DownloadsList",
+      "screen": "SimpleListView",
+      "model": "file"
+    }
+  ],
+  "init": "showDownloads"
+}

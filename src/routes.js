@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { AppRegistry } from 'react-native';
+import { Provider, connect } from 'react-redux';
 import { connectAllInteractors } from 'conventional-redux';
 
 // import ProvidersView from './components/Providers/ProvidersView';
@@ -18,7 +19,7 @@ import ThumbnailsListView from './screens/ThumbnailsListView';
 import DetailsView from './screens/DetailsView';
 
 
-export default function registerScreens(store, Provider) {
+export default function registerScreens(store) {
   const componentBuilder = {};
 
   function registerComponent(name, InternalComponent) {

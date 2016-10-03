@@ -130,8 +130,10 @@ class AppWrapper extends Component {
 
   render() {
     if (!this.p('app.isInitialized')) {
-      return ( <ActivityIndicator animating={ this.props.isInitialized } style={ styles.centering } size="large" /> );
+      return ( <ActivityIndicator animating={ true } style={ styles.centering } size="large" /> );
     }
+    this.p('plugins.activePlugin');
+    this.p(`${this.p('plugins.activePlugin')}.currentState`);
 
     return (
       <View style={{ flex: 1 }}>

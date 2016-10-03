@@ -1,0 +1,11 @@
+[
+  {
+    "name": "file",
+    "title": "Загрузки",
+    "dataType": 0,
+    "mapper": {
+      "title": 0,
+      "link": 1
+    }
+  }
+]

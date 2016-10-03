@@ -173,12 +173,14 @@ export default class DataFlow {
 
     this.dispatch([`${this.pluginName}:applyTransition`, transition, item]);
 
-    cb([transition.to(), transition.to().model()]);
+    if (transition.to() !== transition.from()) {
+      cb([transition.to(), transition.to().model()]);
+    }
   }
 
   onRestoreState() {
     const currentState = this.state.currentState || {};
-log('currentState', currentState)
+
     const availTrans = lo.filter(this.transitions, trans => (trans.to() || {}).name == currentState.name);
     /*
      * Check conditions
@@ -198,8 +200,16 @@ log('currentState', currentState)
   async applyTransition(transition:Transition, context = {}) {
     const nextState = transition.to();
     const actions = transition.actions;
+    const isSameState = transition.to() === transition.from();
     if (Immutable.isImmutable(context)) {
       context = context.asMutable();
+    }
+    else {
+      console.warn('This is bad: check "applyTransition" method');
+    }
+
+    if (isSameState) {
+      context.__results = nextState.data.asMutable({deep: true});
     }
 
     context.__models = this.models;
@@ -208,7 +218,7 @@ log('currentState', currentState)
       context.__results = await PROCESSORS[actFunc].bind(context)();
     }
 
-    return nextState.set('data', context.__results);
+    return isSameState ? nextState.merge({data: context.__results}) : nextState.set('data', context.__results);
   }
 
   onApplyTransition() {
@@ -225,7 +235,7 @@ log('currentState', currentState)
 
   onApplyTransitionError(error) {
     console.log('>>>> ERROR : ', error);
-    throw error;
+    throw error; // TODO: remove this!
     return this.state.merge({isProcessing: false});
   }
 }

@@ -1,6 +1,5 @@
 import { AppRegistry } from 'react-native';
 import { createStore, applyMiddleware } from 'redux';
-import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import { conventionalReduxMiddleware, setRecreateReducerFunction, registerInteractors } from 'conventional-redux';
 import createLogger from 'redux-logger';
@@ -25,7 +24,7 @@ store.asyncReducers = {};
 
 // screen related book keeping
 import registerScreens from './routes';
-registerScreens(store, Provider);
+registerScreens(store);
 
 
 export default class App {

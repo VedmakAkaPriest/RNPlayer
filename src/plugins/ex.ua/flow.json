@@ -53,7 +53,8 @@
       "from": "ItemDetails",
       "to": "ItemDetails",
       "actions": {
-        "mock": "<%console.log(title)%>"
+        "download": "http://www.ex.ua${link}",
+        "mock": "${mock(__results)}"
       }
     }
   ],
