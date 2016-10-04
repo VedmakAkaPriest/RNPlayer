@@ -107,7 +107,7 @@ export default class PlayerView extends Component {
     return (
       <View style={styles.container}>
         <StatusBar hidden={true} animated={true} />
-        <Video source={{uri: songPlaying.path, isAbsolute: true }}
+        <Video source={{uri: songPlaying.path }}
                ref="audio"
                volume={ this.state.muted ? 0 : 1.0}
                muted={false}
@@ -123,10 +123,13 @@ export default class PlayerView extends Component {
         />
 
         <View style={ [styles.header, screenWidth] }>
-          <Text style={ styles.headerText }> songPlaying.title </Text>
+          <Text style={ styles.headerText }>{ songPlaying.title }</Text>
         </View>
         <View style={ styles.headerClose }>
-          <Icon onPress={ _ => this.props.navigator.dismissModal({animationType: 'slide-down'}) } name="ios-arrow-dropdown" size={25} color="#fff" />
+          <Icon onPress={ this.props.handleClose }
+                name="ios-arrow-dropdown"
+                size={ 25 }
+                color="#fff" />
         </View>
         { false ? (
           <Image

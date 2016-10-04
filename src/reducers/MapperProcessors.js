@@ -8,6 +8,7 @@ const PROCESSORS = {
     this.mock = function(results) {return JSON.stringify(results)}
     return Promise.resolve(JSON.parse(lo.template(this.__arguments)(this)));
   },
+  // QUERY
   "download": function() {
     log(this)
     fetchBlob.config({
@@ -31,6 +32,7 @@ const PROCESSORS = {
       });
   },
   "queryHtml": function() { return xml.queryHtml(this.__results, this.__arguments) },
+  // FILESYSTEM
   "fs.createIfNotExists": function() {
     this.__dirs=fetchBlob.fs.dirs;
     const path = lo.template(this.__arguments)(this);
@@ -46,11 +48,20 @@ const PROCESSORS = {
       });
   },
   "fs.open": function() {
-    log(this)
     const path = lo.template(this.__arguments)(this);
     fetchBlob.fs.stat(path).then(r=>log(r)||fetchBlob.android.actionViewIntent(path, 'image/png')).then(r=>log(r));
     return Promise.resolve(this.__results);
   },
+  // PLAYER
+  "player.open": function() {
+    const tmpSong = lo.mapValues(this.__arguments, value => lo.template(value)(this));
+    const tmpPlaylist = {
+      songIndex: 0,
+      songs: [tmpSong]
+    };
+    return Promise.resolve(tmpPlaylist);
+  },
+  // DATA TRANSFORMERS
   "map": function() {
     const model = lo.has(this.__models, this.__arguments) ? this.__models[this.__arguments] : null;
     if (model && model.mapper) {

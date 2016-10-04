@@ -12,9 +12,12 @@
     {
       "name": "openFile",
       "from": "DownloadsList",
-      "to": "DownloadsList",
+      "to": "Player",
       "actions": {
-        "fs.open": "${link}"
+        "player.open": {
+          "title": "${title}",
+          "path": "${link}"
+        }
       }
     }
   ],
@@ -23,6 +26,11 @@
       "name": "DownloadsList",
       "screen": "SimpleListView",
       "model": "file"
+    },
+    {
+      "name": "Player",
+      "screen": "VideoPlayerView",
+      "model": "playlist"
     }
   ],
   "init": "showDownloads"

@@ -7,5 +7,23 @@
       "title": 0,
       "link": 1
     }
+  },
+  {
+    "name": "playlist",
+    "title": "?-playlist-?",
+    "dataType": 1,
+    "mapper": {
+      "songIndex": 0,
+      "songs": "song"
+    }
+  },
+  {
+    "name": "song",
+    "title": "?-song-?",
+    "dataType": 0,
+    "mapper": {
+      "title": 0,
+      "path": 1
+    }
   }
 ]
