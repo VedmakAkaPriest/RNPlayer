@@ -221,8 +221,8 @@ export default class DataFlow {
     return isSameState ? nextState.merge({data: context.__results}) : nextState.set('data', context.__results);
   }
 
-  onApplyTransition() {
-    return this.state.merge({isProcessing: true});
+  onApplyTransition(transition:Transition) {
+    return this.state.merge({isProcessing: true, currentState: transition.to()});
   }
 
   onApplyTransitionSuccess(nextState) {

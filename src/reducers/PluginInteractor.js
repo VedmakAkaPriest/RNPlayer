@@ -8,42 +8,35 @@ export default class PluginInteractor {
     loadedPlugins: {},
     activePlugin: null,
     isProcessing: true,
-    screen: {
-      "name": "Source",
+    currentState: {
+      "name": "Plugins",
       "screen": "SimpleListView",
-      "model": "sources"
+      "model": function() {
+        return {
+          "name": "sources",
+          "title": "Plugins",
+          "dataType": 0,
+        };
+      },
+      "data": []
     },
-    currentState: null,
-    model: {
-      "name": "sources",
-      "title": "Plugins",
-      "dataType": 0,
-      "data": [
-        //{
-        //  "title": "ex.ua",
-        //  pluginName: 'ex.uaPlugin'
-        //}
-      ]
-    }
   };
   plugins = {};
 
   constructor() {
-    this.state.currentState = this.state.model;
     this.state.activePlugin = 'plugins';
   }
 
   onRegister(staticPlugins, dynPlugins) {
-    const model = this.state.model.asMutable({deep: true});
+    const currentState = this.state.currentState.asMutable({deep: true});
     this.plugins = {...staticPlugins, ...dynPlugins};
 
     for (let pluginName in this.plugins) {
-      model.data.push({pluginName, title: pluginName.replace('Plugin', '')});
+      currentState.data.push({pluginName, title: pluginName.replace('Plugin', '')});
     }
 
     return this.state.merge({
-      model,
-      currentState: model,
+      currentState: currentState,
       isProcessing: false,
       loadedPlugins: lo.mapValues(staticPlugins, _=> true)
     });

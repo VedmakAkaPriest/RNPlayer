@@ -6,33 +6,51 @@ import createLogger from 'redux-logger';
 import { makeRootReducer, injectReducers } from './reducers';
 import AppInteractor from './reducers/AppInteractor';
 import PluginInteractor from './reducers/PluginInteractor';
-
-// redux related book keeping
-const appInteractor = new AppInteractor(),
-  pluginInteractor = new PluginInteractor();
-registerInteractors({'app': appInteractor, 'plugins': pluginInteractor});
-
-const logger = createLogger({
-  collapsed: true,
-  stateTransformer: function(state) {return state.asMutable({deep: true})}
-});
-const createStoreWithMiddleware = applyMiddleware(conventionalReduxMiddleware, thunk, logger)(createStore);
-const store = createStoreWithMiddleware(makeRootReducer());
-setRecreateReducerFunction(() => store.replaceReducer(makeRootReducer()));
-store.asyncReducers = {};
-
-
-// screen related book keeping
 import registerScreens from './routes';
-registerScreens(store);
 
 
 export default class App {
 
   constructor(navigator = {}, downloadIcon='') {
-    // since react-redux only works on components, we need to subscribe this class manually
-     store.subscribe(this.onStoreUpdate.bind(this));
+    this.start();
   }
+
+  start(mode = 0) {
+    switch (mode) {
+      case 1:
+
+        break;
+      case 0:
+      default:
+        this.constructStore();
+    }
+
+    this.store.dispatch(['app:init']);
+  }
+
+  constructStore() {
+    // redux related book keeping
+    const appInteractor = new AppInteractor(),
+      pluginInteractor = new PluginInteractor();
+    registerInteractors({'app': appInteractor, 'plugins': pluginInteractor});
+
+    const logger = createLogger({
+      collapsed: true,
+      stateTransformer: function(state) {return state.asMutable({deep: true})}
+    });
+    const createStoreWithMiddleware = applyMiddleware(conventionalReduxMiddleware, thunk, logger)(createStore);
+    this.store = createStoreWithMiddleware(makeRootReducer());
+    setRecreateReducerFunction(() => this.store.replaceReducer(makeRootReducer()));
+    this.store.asyncReducers = {};
+
+    // since react-redux only works on components, we need to subscribe this class manually
+    this.store.subscribe(this.onStoreUpdate.bind(this));
+
+    // screen related book keeping
+    registerScreens(this.store);
+  }
+
+
 
   onStoreUpdate() {
     //log(store.getState().asMutable({deep:true}))

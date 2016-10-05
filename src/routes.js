@@ -10,12 +10,16 @@ import ThumbnailsListView from './screens/ThumbnailsListView';
 import DetailsView from './screens/DetailsView';
 import VideoPlayerView from './screens/VideoPlayerView';
 
+const registeredComponents = {};
+
+export const componentBuilder = function(name) {
+  return connectAllInteractors(registeredComponents[name]);
+};
 
 export default function registerScreens(store) {
-  const componentBuilder = {};
 
   function registerComponent(name, InternalComponent) {
-    componentBuilder[name] = InternalComponent;
+    registeredComponents[name] = InternalComponent;
     //Object.assign(componentBuilder, { get [name]() { return  connectAllInteractors(InternalComponent); }})
   }
 
@@ -43,7 +47,7 @@ export default function registerScreens(store) {
       render() {
         return (
           <Provider store={store}>
-            <AppWrapper componentBuilder={ name =>  log('connect') || connectAllInteractors(componentBuilder[name]) } {...this.props} />
+            <AppWrapper componentBuilder={ componentBuilder } {...this.props} />
           </Provider>
         );
       }

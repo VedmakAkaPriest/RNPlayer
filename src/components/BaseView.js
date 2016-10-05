@@ -26,10 +26,10 @@ class BaseView extends Component {
 
   handleItem(item) {
     const beforeTransition = ([nextState, nextModel]) => {
-      this.props.navigator.push({
-        screen: nextState.screen,
-        title: nextModel.title
-      })
+      // this.props.navigator.push({
+      //   screen: nextState.screen,
+      //   title: nextModel.title
+      // })
     };
     this[this.p('plugins.activePlugin')].handleChange(item, beforeTransition);
   }
