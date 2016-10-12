@@ -9,17 +9,22 @@ import SimpleListView from './screens/SimpleListView';
 import ThumbnailsListView from './screens/ThumbnailsListView';
 import DetailsView from './screens/DetailsView';
 import VideoPlayerView from './screens/VideoPlayerView';
+import ThemingView from './screens/ThemingView';
 
-const registeredComponents = {};
+const allRegisteredScreens = {};
+
+export const screenByName = function(name) {
+  return allRegisteredScreens[name];
+};
 
 export const componentBuilder = function(name) {
-  return connectAllInteractors(registeredComponents[name]);
+  return connectAllInteractors(allRegisteredScreens[name]);
 };
 
 export default function registerScreens(store) {
 
   function registerComponent(name, InternalComponent) {
-    registeredComponents[name] = InternalComponent;
+    allRegisteredScreens[name] = InternalComponent;
     //Object.assign(componentBuilder, { get [name]() { return  connectAllInteractors(InternalComponent); }})
   }
 
@@ -27,6 +32,7 @@ export default function registerScreens(store) {
   registerComponent('ThumbnailsListView', ThumbnailsListView);
   registerComponent('DetailsView', DetailsView);
   registerComponent('VideoPlayerView', VideoPlayerView);
+  registerComponent('ThemingView', ThemingView);
 
   const generatorWrapper = function() {
     return class extends Component {

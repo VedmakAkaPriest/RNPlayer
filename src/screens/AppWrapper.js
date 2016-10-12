@@ -28,53 +28,6 @@ class AppWrapper extends Component {
     };
   }
 
-  componentDidMount() {
-
-  }
-
-//   shouldComponentUpdate(nextProps) {
-//     const nextState = {
-//       isInitialized: lo.get(nextProps, 'app.isInitialized', this.state.isInitialized),
-//       activePlugin: lo.get(nextProps, 'plugins.activePlugin', this.state.activePlugin),
-//       component: this.state.component
-//     };
-//
-//     if (!lo.has(nextProps, [nextState.activePlugin, 'currentState', 'name'])) {
-//       log('???', lo.get(nextProps, [nextState.activePlugin]))
-//       return false;
-//     }
-//
-//       nextState.route = lo.get(nextProps, [nextState.activePlugin, 'currentState', 'name'], this.state.route);
-//     nextState.componentName = lo.get(nextProps, [nextState.activePlugin, 'currentState', 'screen'], this.state.componentName);
-// log('nextState', nextState, this.state, !lo.isEqual(this.state, nextState))
-//     return !lo.isEqual(this.state, nextState);
-//   }
-
-  // componentWillReceiveProps(nextProps) {
-  //   log('componentWillReceiveProps', nextProps[nextProps.plugins.activePlugin]);
-  //   const nextState = {
-  //     isInitialized: lo.get(nextProps, 'app.isInitialized', this.state.isInitialized),
-  //     activePlugin: lo.get(nextProps, 'plugins.activePlugin', this.state.activePlugin),
-  //     component: this.state.component
-  //   };
-  //   nextState.route = lo.get(nextProps, [nextState.activePlugin, 'currentState', 'name'], this.state.route);
-  //   nextState.componentName = lo.get(nextProps, [nextState.activePlugin, 'currentState', 'screen'], this.state.componentName);
-  //
-  //   this.setState(nextState);
-  // }
-
-  get pluginName() {
-    return this.p('plugins.activePlugin');
-  }
-
-  get currentState() {
-    return this.p(`${this.pluginName}.currentState`) || {};
-  }
-
-  get currentStateModel() {
-    return this.p(`${this.pluginName}.currentState.model`) || {};
-  }
-
   get component() {
     return this.props.componentName ? this.props.componentBuilder(this.props.componentName) : null;
   }
@@ -83,7 +36,7 @@ class AppWrapper extends Component {
     if (!this.props.isInitialized) {
       return ( <ActivityIndicator animating={ true } style={ styles.centering } size="large" /> );
     }
-log(this.props.model)
+
     return (
       <Navigator component={ this.component }
                  route={ this.props.route }

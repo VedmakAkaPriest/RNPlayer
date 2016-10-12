@@ -1,0 +1,19 @@
+{
+  "transitions": [
+    {
+      "name": "showMain",
+      "to": "Theming",
+      "actions": {
+
+      }
+    }
+  ],
+  "states": [
+    {
+      "name": "Theming",
+      "screen": "ThemingView",
+      "model": "containers"
+    }
+  ],
+  "init": "showMain"
+}

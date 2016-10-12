@@ -32,6 +32,11 @@ export default class AppInteractor {
       'flow': require('./../plugins/downloads/flow.json'),
       'dynamic': true
     };
+    plugins['theming'] = {
+      'models': require('./../plugins/theming/models.json'),
+      'flow': require('./../plugins/theming/flow.json'),
+      'dynamic': true
+    };
 
     //const plugins = FS.ls(FS.dirs.ApplicationDir+ '/').then(r => log(r)).catch(e=>log(e));
 

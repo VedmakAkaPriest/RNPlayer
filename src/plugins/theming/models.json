@@ -1,0 +1,11 @@
+[
+  {
+    "name": "containers",
+    "title": "Оформление",
+    "dataType": 0,
+    "mapper": {
+      "title": 0,
+      "link": 1
+    }
+  }
+]

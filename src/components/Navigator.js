@@ -126,7 +126,7 @@ export default class Navigator extends Component {
                        backgroundColor={ '#149be0' }
                        leftButtonIcon={ this.state.navigationBar.leftButtonIcon }
                        leftButtonTitleColor={ '#fff' }
-                       onLeftButtonPress={ this.pop }
+                       onLeftButtonPress={ undefined }
                        rightButtonIcon={ this.state.downloadIcon }
                        rightButtonTitleColor={ '#fff' }
                        onRightButtonPress={ undefined } />
