@@ -4,14 +4,22 @@
       "name": "showMain",
       "to": "Theming",
       "actions": {
-
+        "static": {
+          "SimpleListView": {
+            "mockData": [{ "title": "title 1" }, { "title": "title 2" }]
+          },
+          "ThumbnailsListView": {
+            "mockData": [{ "title": "title 1", "poster": "https://www.google.com.ua/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png" },
+              { "title": "title 2", "poster": "https://www.google.com.ua/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png" }]
+          }
+        }
       }
     }
   ],
   "states": [
     {
       "name": "Theming",
-      "screen": "ThemingView",
+      "screen": "ThemeBuilder",
       "model": "containers"
     }
   ],

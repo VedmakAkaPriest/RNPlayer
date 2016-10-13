@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { AppRegistry, StyleSheet, NavigationExperimental,
+import { AppRegistry, StyleSheet, NavigationExperimental, Platform,
   Animated, View, ActivityIndicator } from 'react-native';
 const {
   CardStack: NavigationCardStack,
@@ -144,8 +144,10 @@ Navigator.propTypes = {
 
 const styles = StyleSheet.create({
   scene: {
-    paddingTop: NavigationBarHeight,
-    backgroundColor: '#E9E9EF',
+    ...Platform.select({
+      ios: { paddingTop: NavigationBarHeight + 20 },
+      android: { paddingTop: NavigationBarHeight },
+    }),    backgroundColor: '#E9E9EF',
     bottom: 0,
     flex: 2,
     left: 0,

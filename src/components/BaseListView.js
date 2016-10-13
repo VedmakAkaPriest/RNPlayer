@@ -25,7 +25,8 @@ class BaseListView extends BaseView {
     return (
       <ListView enableEmptySections={ true }
                 dataSource={ this.dataSource }
-                renderRow={ this.renderListItem.bind(this) } />
+                renderRow={ this.renderListItem.bind(this) }
+                style={ this.styles.listView }/>
     )
   }
 }

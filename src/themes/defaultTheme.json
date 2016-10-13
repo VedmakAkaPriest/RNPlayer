@@ -1,0 +1,19 @@
+{
+  "SimpleListView": {
+    "listView": {
+      "flex": 1
+    },
+    "row": {
+      "flexDirection": "row",
+      "justifyContent": "center",
+      "padding": 10,
+      "backgroundColor": "#F6F6F6"
+    },
+    "rowText": {
+      "flex": 1
+    },
+    "rowDescription": {
+      "flex": 1
+    }
+  }
+}

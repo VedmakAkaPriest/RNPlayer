@@ -1,5 +1,4 @@
 import lo from 'lodash';
-import { registerInteractors, recreateReducerFunction } from 'conventional-redux';
 import Immutable from 'seamless-immutable';
 import RNFetch from 'react-native-fetch-blob';
 const FS = RNFetch.fs;
@@ -40,6 +39,7 @@ export default class AppInteractor {
 
     //const plugins = FS.ls(FS.dirs.ApplicationDir+ '/').then(r => log(r)).catch(e=>log(e));
 
+    this.dispatch(['themesManager:init']);
 
     return plugins;
   };

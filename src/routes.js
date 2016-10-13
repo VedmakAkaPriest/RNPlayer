@@ -9,7 +9,7 @@ import SimpleListView from './screens/SimpleListView';
 import ThumbnailsListView from './screens/ThumbnailsListView';
 import DetailsView from './screens/DetailsView';
 import VideoPlayerView from './screens/VideoPlayerView';
-import ThemingView from './screens/ThemingView';
+import ThemeBuilder from './screens/ThemeBuilder';
 
 const allRegisteredScreens = {};
 
@@ -32,7 +32,7 @@ export default function registerScreens(store) {
   registerComponent('ThumbnailsListView', ThumbnailsListView);
   registerComponent('DetailsView', DetailsView);
   registerComponent('VideoPlayerView', VideoPlayerView);
-  registerComponent('ThemingView', ThemingView);
+  registerComponent('ThemeBuilder', ThemeBuilder);
 
   const generatorWrapper = function() {
     return class extends Component {

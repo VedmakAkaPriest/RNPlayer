@@ -59,7 +59,7 @@ function defineShouldComponentUpdate(klass) {
       this.__touchedProperties = [];
     }
 
-    return result
+    return result || this.state != nextState;
   };
 }
 
