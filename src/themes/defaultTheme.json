@@ -15,5 +15,24 @@
     "rowDescription": {
       "flex": 1
     }
+  },
+  "ThumbnailsListView": {
+    "row": {
+      "flexDirection": "row",
+      "justifyContent": "center",
+      "padding": 10,
+      "backgroundColor": "#F6F6F6"
+    },
+    "thumbnail": {
+      "width": 64,
+      "height": 64
+    },
+    "title": {
+      "flex": 1,
+      "marginHorizontal": 5
+    },
+    "description": {
+      "flex": 1
+    }
   }
 }

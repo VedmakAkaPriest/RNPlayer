@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, TouchableOpacity, View, Text, TextInput } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, ScrollView, Text, TextInput } from 'react-native';
 import lo from 'lodash';
 
 
@@ -12,13 +12,14 @@ export default class PropertyEditor extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const categories = lo.assign({}, this.state.categories, nextProps.categories.asMutable({deep: true}));
+    const categories = lo.merge(this.state.categories, nextProps.categories.asMutable({deep: true}));
     this.setState({categories});
   }
 
   addNewProperty(categName) {
-    //const categories = lo.assign({}, this.props.categories, {[categName]: })
-    //this.setState({categories});
+    const categories = this.state.categories;
+    categories[categName][''] = '';
+    this.setState({categories});
   }
 
   changeProperty(categName, propKey, propValue) {
@@ -31,11 +32,30 @@ export default class PropertyEditor extends Component {
     this.props.onChange(categories);
   }
 
+  changePropertyName(categName, propKey, nextValue) {
+    const categories = this.state.categories;
+    const propValue = categories[categName][propKey];
+
+    lo.set(categories, [categName, nextValue], propValue);
+    delete categories[categName][propKey];
+
+    this.setState({categories});
+  }
+
   renderProperty(categName, propertyValue, propertyKey) {
     return (
-      <View style={ styles.propContainer } key={ propertyKey }>
-        <Text style={ styles.propTitle }>{ lo.truncate(propertyKey, {length: 20}) }</Text>
-        <TextInput style={ styles.propField } defaultValue={ ''+propertyValue } onChangeText={ this.changeProperty.bind(this, categName, propertyKey) }/>
+      <View style={ styles.propContainer } key={ lo.keys(this.state.categories[categName]).indexOf(propertyKey) }>
+        <TextInput style={ styles.propTitle }
+                   underlineColorAndroid="rgba(0,0,0,0)"
+                   autoCorrect={ false }
+                   value={ ''+propertyKey }
+                   onChangeText={ this.changePropertyName.bind(this, categName, propertyKey) }/>
+
+        <TextInput style={ styles.propField }
+                   underlineColorAndroid="rgba(0,0,0,0)"
+                   autoCorrect={ false }
+                   defaultValue={ ''+propertyValue }
+                   onChangeText={ this.changeProperty.bind(this, categName, propertyKey) }/>
       </View>
     );
   }
@@ -83,6 +103,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   propContainer: { flexDirection: 'row', padding: 5, alignItems: 'center' },
-  propTitle: { fontSize: 10 },
-  propField: { flex: 1, paddingLeft: 5, fontSize: 10, textAlign: 'right' }
+  propTitle: { flex: 1, paddingVertical: 0, paddingLeft: 5, fontSize: 10, maxHeight: 11 },
+  propField: { flex: 1, paddingVertical: 0, paddingLeft: 5, fontSize: 10, maxHeight: 11, textAlign: 'right' }
 });

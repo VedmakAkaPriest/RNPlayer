@@ -205,7 +205,7 @@ export default class DataFlow {
       context = context.asMutable();
     }
     else {
-      console.warn('This is bad: check "applyTransition" method');
+      console.log('This is bad: check "applyTransition" method');
     }
 
     if (isSameState) {

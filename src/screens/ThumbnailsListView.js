@@ -15,10 +15,10 @@ class ThumbnailsListView extends BaseListView {
   renderListItem(listItem) {
     return (
       <TouchableHighlight onPress={ this.handleItem.bind(this, listItem) } activeOpacity={ 100 } underlayColor="#ea4b54">
-        <View style={ styles.row }>
-          <Image style={styles.thumb} source={{ uri: listItem.poster }} />
-          <Text style={ styles.title }>{ listItem.title }</Text>
-          { listItem.description ? (<Text style={ styles.description }>{ listItem.description }</Text>) : null }
+        <View style={ this.styles.row }>
+          <Image style={ this.styles.thumbnail } source={{ uri: listItem.poster }} />
+          <Text style={ this.styles.title }>{ listItem.title }</Text>
+          { listItem.description ? (<Text style={ this.styles.description }>{ listItem.description }</Text>) : null }
         </View>
       </TouchableHighlight>
     );
@@ -27,23 +27,3 @@ class ThumbnailsListView extends BaseListView {
 
 export default ThumbnailsListView;
 
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    padding: 10,
-    backgroundColor: '#F6F6F6',
-  },
-  thumb: {
-    width: 64,
-    height: 64,
-  },
-  title: {
-    flex: 1,
-    marginHorizontal: 5
-  },
-  description: {
-    flex: 1
-  },
-  centering: { alignItems: 'center', justifyContent: 'center', padding: 8, },
-});

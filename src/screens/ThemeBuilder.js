@@ -13,6 +13,8 @@ import NavigationBar from 'react-native-navigation-bar';
 import Navigator from '../components/Navigator';
 import ActionSheet from '../components/ActionSheet';
 import PropertiesEditor from '../components/PropertyEditor';
+var ViewStylePropTypes = require('ViewStylePropTypes');
+var ReactPropTypesSecret = require('react/lib/ReactPropTypesSecret');
 
 
 class ThemeBuilder extends Component {
@@ -23,6 +25,24 @@ class ThemeBuilder extends Component {
       previewItems: ['SimpleListView', 'ThumbnailsListView'],
       previewPickerVisible: false
     };
+  }
+
+  componentWillMount() {
+    this.calculateSize();
+  }
+
+  componentDidReceiveProps(nextProps) {
+    this.calculateSize();
+  }
+
+  calculateSize() {
+    let {width, height} = Dimensions.get('window');
+    if (width > height) {
+      width += height;
+      height = width - height;
+      width -= height;
+    }
+    this.setState({width, height});
   }
 
   mockProps = (propName) => {
@@ -54,15 +74,41 @@ class ThemeBuilder extends Component {
   }
 
   applyChanges = (nextTheme) => {
-    this.props.dispatch(['themesManager:changeAppearance', {SimpleListView:nextTheme}])
+    try {
+      for (var key in nextTheme) {
+        for (var prop in nextTheme[key]) {
+          ThemeBuilder.validateStyleProp(prop, nextTheme[key], key);
+        }
+      }
+      this.setState({errorMessage: null});
+      this.themesManager.changeAppearance(this.state.previewScreen, nextTheme);
+    }
+    catch(e) {
+      this.setState({errorMessage: e.message})
+    }
   };
 
-  componentDidMount() {
-    //setTimeout(_=>this.applyChanges({row:{padding: 100}}), 1000);
+  static validateStyleProp(prop, style, caller) {
+    if (ViewStylePropTypes[prop] === undefined) {
+      var message1 = '"' + prop + '" is not a valid style property.';
+      var message2 = '\nValid style props: ' +
+        JSON.stringify(Object.keys(ViewStylePropTypes).sort(), null, '  ');
+      throw new Error(message1 + message2);
+    }
+    var error = ViewStylePropTypes[prop](
+      style,
+      prop,
+      caller,
+      'prop',//ReactPropTypeLocations.prop,
+      null,
+      ReactPropTypesSecret
+    );
+    if (error) {
+      throw error;
+    }
   }
 
   renderActionSheet() {
-    log(this.state.previewScreen)
     return (
       <ActionSheet modalVisible={ this.state.previewPickerVisible }
                    onCancel={ this.onPress }
@@ -104,31 +150,41 @@ class ThemeBuilder extends Component {
 
   render() {
     const Screen = this.mockComponent(screenByName(this.state.previewScreen));
-    const {width, height} = Dimensions.get('window');
+    const {width, height} = this.state;
     const top = -height/4 + 40;
     const left = -width/4 + 5;
 
+    let propsContainerWidth = width;
+    let propsContainerHeight = height;
+    if (this.p('orientation') === 'landscape') {
+      propsContainerWidth = height;
+      propsContainerHeight = width;
+    }
+    propsContainerWidth = propsContainerWidth - width/2 -10;
+
     return (
-      <View style={{ flex: 1}}>
+      <View>
         { this.renderActionSheet() }
         <TouchableHighlight onPress={ this.onPress }>
-          <View style={{ flex: 1, flexDirection: 'row', justifyContent:'flex-start' }}>
-            <Text style={{fontWeight: 'bold', flex: 1, paddingVertical: 10, paddingRight: 0, maxWidth: 70}}>Preview:</Text>
-            <Text style={{flex: 1, paddingVertical: 10, paddingLeft: 0}}>{ this.state.previewScreen }</Text>
+          <View style={ styles.previewHeader }>
+            <Text style={ styles.previewHeaderText }>Preview:</Text>
+            <Text style={ styles.previewHeaderValue }>{ this.state.previewScreen }</Text>
           </View>
         </TouchableHighlight>
 
-
-        <View style={[styles.screenContainer, {width, height, position: 'absolute', top, left}]}>
+        <View style={[styles.screenContainer, {width, height, top, left}]}>
           <Navigator component={ Screen }
                      route={ 'wtf' }
                      navigationBar={{ title: 'Title' }}/>
         </View>
 
-        <ScrollView style={{ width: width/2 -10, height, position: 'absolute', right: 0, top: 0 }}>
-          <PropertiesEditor style={{ flex: 1 }}
+        <Text style={[styles.errorText, {width: width*.5, top: 40+height*.5} ]}>{ this.state.errorMessage }</Text>
+
+
+        <ScrollView style={[styles.propsContainer, { width: propsContainerWidth, height: propsContainerHeight }]}>
+          <PropertiesEditor style={{ flex: 1, height: null }}
                             categories={ this.p(`themesManager.${this.state.previewScreen}`) }
-                            onChange={ nextTheme => this.themesManager.changeAppearance(this.state.previewScreen, nextTheme) }/>
+                            onChange={ this.applyChanges }/>
         </ScrollView>
       </View>
     )
@@ -141,7 +197,15 @@ const styles = StyleSheet.create({
   screenContainer: {
     alignSelf: 'flex-start',
     flex: 1,
+    position: 'absolute',
     borderWidth: 1,
     transform: [{scale: .5}]
-  }
+  },
+  previewHeader: { flex: 1, flexDirection: 'row', justifyContent:'flex-start' },
+  previewHeaderText: { fontWeight: 'bold', flex: 1, paddingVertical: 10, paddingRight: 0, maxWidth: 70},
+  previewHeaderValue: { flex: 1, paddingVertical: 10, paddingLeft: 0},
+
+  propsContainer: { position: 'absolute', right: 0, top: 0 },
+
+  errorText: { position: 'absolute', left: 0, fontSize: 10 }
 });

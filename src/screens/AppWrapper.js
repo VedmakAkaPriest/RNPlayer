@@ -40,7 +40,10 @@ class AppWrapper extends Component {
     return (
       <Navigator component={ this.component }
                  route={ this.props.route }
-                 navigationBar={{ title: this.props.model && this.props.model.title }}/>
+                 navigationBar={{ title: this.props.model && this.props.model.title,
+                 onLeftButtonPress: _=> this.props.dispatch([this.props.plugin + ':restoreState']),
+
+                 }}/>
     );
   }
 }
@@ -49,6 +52,7 @@ function mapStateToProps(state) {
   const plugin = state.plugins.activePlugin;
   return {
     isInitialized: state.app.isInitialized && state.themesManager.isInitialized,
+    plugin,
     componentName: lo.get(state, [plugin, 'currentState', 'screen']),
     route: lo.get(state, [plugin, 'currentState', 'name']),
     model: lo.get(state, [plugin, 'currentState', 'model'], _=>null)(),

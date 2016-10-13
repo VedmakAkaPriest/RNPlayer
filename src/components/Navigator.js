@@ -39,7 +39,8 @@ export default class Navigator extends Component {
 
     if (nextProps.route != this.props.route) {
       const nextRoute = { key: nextProps.route };
-      const routeIdx = NavigationStateUtils.indexOf(this.state.navigationState, nextRoute);
+      const routeIdx = NavigationStateUtils.indexOf(this.state.navigationState, nextRoute.key);
+
       if (routeIdx === -1) {
         this.onNavigationChange(NavigationStateUtils.push(this.state.navigationState, nextRoute));
       }
@@ -100,6 +101,11 @@ export default class Navigator extends Component {
     };
   }
 
+  onLayoutChange = (e) => {
+    var layout = e.nativeEvent.layout;
+    this.setState({ orientation: (layout.width < layout.height ? 'portrait' : 'landscape') });
+  };
+
   renderContent(transitionProps) {
     const InternalComponent = this.props.component;
     // const loader = ( <ActivityIndicator animating={ true } style={ styles.centering } size="large" /> );
@@ -107,16 +113,15 @@ export default class Navigator extends Component {
       return null;
     }
     return (
-      <Animated.View
-        style={[styles.scene, this.getAnimatedStyle(transitionProps)]}>
-        <InternalComponent />
+      <Animated.View style={[styles.scene, this.getAnimatedStyle(transitionProps)]}>
+        <InternalComponent orientation={ this.state.orientation }/>
       </Animated.View>
     );
   }
 
   render() {
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1 }} onLayout={ this.onLayoutChange }>
         <Transitioner navigationState={ this.state.navigationState }
                       onTransitionStart={ this.onTransitionStart }
                       render={ this.renderContent.bind(this) } />
@@ -124,9 +129,9 @@ export default class Navigator extends Component {
                        height={ NavigationBarHeight }
                        titleColor={ '#fff' }
                        backgroundColor={ '#149be0' }
-                       leftButtonIcon={ this.state.navigationBar.leftButtonIcon }
+                       leftButtonIcon={ this.state.backIcon }
                        leftButtonTitleColor={ '#fff' }
-                       onLeftButtonPress={ undefined }
+                       onLeftButtonPress={ this.state.navigationBar.onLeftButtonPress }
                        rightButtonIcon={ this.state.downloadIcon }
                        rightButtonTitleColor={ '#fff' }
                        onRightButtonPress={ undefined } />
@@ -145,9 +150,10 @@ Navigator.propTypes = {
 const styles = StyleSheet.create({
   scene: {
     ...Platform.select({
-      ios: { paddingTop: NavigationBarHeight + 20 },
-      android: { paddingTop: NavigationBarHeight },
-    }),    backgroundColor: '#E9E9EF',
+      ios: { top: NavigationBarHeight + 20 },
+      android: { top: NavigationBarHeight },
+    }),
+    backgroundColor: '#E9E9EF',
     bottom: 0,
     flex: 2,
     left: 0,
@@ -157,6 +163,5 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 0},
     shadowOpacity: 0.4,
     shadowRadius: 10,
-    top: 0,
   }
 });
