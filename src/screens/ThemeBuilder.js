@@ -12,6 +12,7 @@ import * as lo from 'lodash';
 import NavigationBar from 'react-native-navigation-bar';
 import Navigator from '../components/Navigator';
 import ActionSheet from '../components/ActionSheet';
+import PropertiesEditor from '../components/PropertyEditor';
 
 
 class ThemeBuilder extends Component {
@@ -125,9 +126,9 @@ class ThemeBuilder extends Component {
         </View>
 
         <ScrollView style={{ width: width/2 -10, height, position: 'absolute', right: 0, top: 0 }}>
-          <View style={ { flex: 1 } }>
-            { lo.map(this.p(`themesManager.${this.state.previewScreen}`), (obj, catName) => this.renderPropCategory(obj, catName) ) }
-          </View>
+          <PropertiesEditor style={{ flex: 1 }}
+                            categories={ this.p(`themesManager.${this.state.previewScreen}`) }
+                            onChange={ nextTheme => this.themesManager.changeAppearance(this.state.previewScreen, nextTheme) }/>
         </ScrollView>
       </View>
     )

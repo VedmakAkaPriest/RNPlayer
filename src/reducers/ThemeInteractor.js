@@ -25,7 +25,9 @@ export default class ThemeInteractor {
     return this.state.merge({isInitialized: true, ...theme});
   }
 
-  onChangeAppearance(theme) {
-    return this.state.merge(theme, {deep: true});
+  onChangeAppearance(viewName, theme) {
+    const nextPartState = {[viewName]: theme};
+    log(nextPartState)
+    return this.state.merge(nextPartState, {deep: true});
   }
 }
