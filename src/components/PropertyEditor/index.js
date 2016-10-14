@@ -103,6 +103,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   propContainer: { flexDirection: 'row', padding: 5, alignItems: 'center' },
-  propTitle: { flex: 1, paddingVertical: 0, paddingLeft: 5, fontSize: 10, maxHeight: 11 },
-  propField: { flex: 1, paddingVertical: 0, paddingLeft: 5, fontSize: 10, maxHeight: 11, textAlign: 'right' }
+  propTitle: { flex: 1, paddingVertical: 0, paddingLeft: 1, fontSize: 12, height: 13 },
+  propField: { flex: 1, paddingVertical: 0, paddingLeft: 1, fontSize: 12, height: 13, textAlign: 'right' }
 });

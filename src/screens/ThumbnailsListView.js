@@ -11,6 +11,7 @@ import BaseListView from '../components/BaseListView';
 
 
 class ThumbnailsListView extends BaseListView {
+  get className() { return 'ThumbnailsListView'; }
 
   renderListItem(listItem) {
     return (

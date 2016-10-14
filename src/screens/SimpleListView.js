@@ -11,6 +11,8 @@ import BaseListView from '../components/BaseListView';
 
 class SimpleListView extends BaseListView {
 
+  get className() { return 'SimpleListView'; }
+
   renderListItem(listItem) {
     return (
       <TouchableHighlight onPress={ this.handleItem.bind(this, listItem) } activeOpacity={ 100 } underlayColor="#ea4b54">
