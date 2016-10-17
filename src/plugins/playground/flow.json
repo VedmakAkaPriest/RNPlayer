@@ -1,0 +1,20 @@
+{
+  "transitions": [
+    {
+      "name": "showMain",
+      "to": "Playground",
+      "actions": {
+        "static": {
+        }
+      }
+    }
+  ],
+  "states": [
+    {
+      "name": "Playground",
+      "screen": "UIBuilder",
+      "model": "containers"
+    }
+  ],
+  "init": "showMain"
+}

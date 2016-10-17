@@ -7,6 +7,7 @@ import { makeRootReducer, injectReducers } from './reducers';
 import AppInteractor from './reducers/AppInteractor';
 import PluginInteractor from './reducers/PluginInteractor';
 import ThemeInteractor from './reducers/ThemeInteractor';
+import PlaygroundInteractor from './reducers/PlaygroundInteractor';
 import registerScreens from './routes';
 
 
@@ -33,8 +34,9 @@ export default class App {
     // redux related book keeping
     const appInteractor = new AppInteractor(),
       pluginInteractor = new PluginInteractor(),
-      themesInteractor = new ThemeInteractor();
-    registerInteractors({'app': appInteractor, 'plugins': pluginInteractor, 'themesManager': themesInteractor});
+      themesInteractor = new ThemeInteractor(),
+      playgroundInteractor = new PlaygroundInteractor();
+    registerInteractors({'app': appInteractor, 'plugins': pluginInteractor, 'themesManager': themesInteractor, 'playground': playgroundInteractor});
 
     const logger = createLogger({
       collapsed: true,

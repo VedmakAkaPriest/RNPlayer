@@ -10,6 +10,7 @@ import ThumbnailsListView from './screens/ThumbnailsListView';
 import DetailsView from './screens/DetailsView';
 import VideoPlayerView from './screens/VideoPlayerView';
 import ThemeBuilder from './screens/ThemeBuilder';
+import UIBuilder from './screens/UIBuilder';
 
 const allRegisteredScreens = {};
 
@@ -33,6 +34,7 @@ export default function registerScreens(store) {
   registerComponent('DetailsView', DetailsView);
   registerComponent('VideoPlayerView', VideoPlayerView);
   registerComponent('ThemeBuilder', ThemeBuilder);
+  registerComponent('UIBuilder', UIBuilder);
 
   const generatorWrapper = function() {
     return class extends Component {

@@ -34,7 +34,12 @@ export default class AppInteractor {
     plugins['theming'] = {
       'models': require('./../plugins/theming/models.json'),
       'flow': require('./../plugins/theming/flow.json'),
-      'dynamic': true
+      'dynamic': false
+    };
+    plugins['playground'] = {
+      'models': require('./../plugins/playground/models.json'),
+      'flow': require('./../plugins/playground/flow.json'),
+      'dynamic': false
     };
 
     //const plugins = FS.ls(FS.dirs.ApplicationDir+ '/').then(r => log(r)).catch(e=>log(e));
@@ -57,13 +62,16 @@ export default class AppInteractor {
       return accum;
     }, {});
 
+    const dynPluginNames = [];
     const dynInteractors = lo(pluginsJsonDescription).pickBy({dynamic: true}).reduce((accum, desc, name) => {
+      dynPluginNames.push(name);
       const pluginName = name+'Plugin';
       accum[pluginName] = DataFlow.buildFromJson(pluginName, desc.models, desc.flow);
       return accum;
     }, {});
 
     this.dispatch(['plugins:register', staticInteractors, dynInteractors]);
+    this.dispatch(['playground:init', dynInteractors]);
   }
 
   onInitError(e) {

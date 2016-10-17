@@ -235,7 +235,6 @@ export default class DataFlow {
 
   onApplyTransitionError(error) {
     console.log('>>>> ERROR : ', error);
-    throw error; // TODO: remove this!
     return this.state.merge({isProcessing: false});
   }
 }
